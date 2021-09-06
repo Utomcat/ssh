@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * CLASS_NAME: UserServic<br/>
@@ -30,11 +32,20 @@ public class UserServiceImpl {
      */
     public User queryUserById(Integer id) {
         User user = userDao.selectById(id);
-        if (null == user ) {
+        if (null == user) {
             return new User();
         } else {
             return user;
         }
+    }
+
+    /**
+     * 获取所有 User 数据
+     *
+     * @return 返回查询到的所有 User 数据对象的 List 集合
+     */
+    public List<User> findAllUser() {
+        return userDao.findAll();
     }
 
     /**
@@ -45,8 +56,38 @@ public class UserServiceImpl {
      */
     @Transactional(rollbackFor = Exception.class)
     public boolean save(User user) {
-        user.setId(LocalDateTime.now().getNano());
-        int result =  userDao.insert(user);
-        return result > 0;
+        User resultUser;
+        boolean paramIsNull = null == user || (null == user.getId() && null == user.getName());
+        if (paramIsNull) {
+            return false;
+        } else {
+            if (null != user.getId() && user.getId() > 0) {
+                Optional<User> optionalUser = userDao.findById(user.getId());
+                if (optionalUser.isPresent()) {
+                    resultUser = userDao.save(user);
+                } else {
+                    return false;
+                }
+            } else {
+                resultUser = userDao.save(user);
+            }
+            return resultUser.getId() > 0;
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public boolean deleted(User user) throws Exception {
+        Integer id = user.getId();
+        if (null == id){
+            throw new Exception("需删除数据的ID不存在,不能删除!");
+        } else {
+            Optional<User> optionalUser = userDao.findById(id);
+            if (optionalUser.isPresent()){
+                User resultUser = userDao.save(user);
+                return resultUser.getId() > 0;
+            }else {
+                throw new Exception("依据数据的ID未能查询到数据,不能删除!");
+            }
+        }
     }
 }
