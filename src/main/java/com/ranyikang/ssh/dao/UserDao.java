@@ -4,6 +4,7 @@ import com.ranyikang.ssh.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -16,8 +17,7 @@ import org.springframework.stereotype.Repository;
  * @date 2021 - 09 - 02 <br/>
  */
 @Repository
-@SuppressWarnings("all")
-public interface UserDao extends JpaRepository<User, Integer>, JpaSpecificationExecutor {
+public interface UserDao extends JpaRepository<User, Integer>, PagingAndSortingRepository<User, Integer>, JpaSpecificationExecutor<User> {
 
     /**
      * 通过数据主键查询 User 数据
