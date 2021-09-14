@@ -1,10 +1,12 @@
 package com.ranyikang.ssh;
 
+import com.ranyikang.ssh.util.ArrayUtils;
 import com.ranyikang.ssh.util.DataBaseUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Slf4j
@@ -13,6 +15,7 @@ class SshApplicationTests {
 
     @Test
     void contextLoads() {
+        log.error("BigDecimal.ZERO.intValue() ==> " + BigDecimal.ZERO.intValue() );
     }
 
     @Test
@@ -36,4 +39,18 @@ class SshApplicationTests {
         boolean aBoolean = Boolean.getBoolean("1");
         log.error(" aBoolean ==> " + aBoolean);
     }
+
+    @Test
+    @SuppressWarnings("all")
+    void test2() {
+        String[] strings = new String[4];
+        if (strings == null){
+            log.error("数组为空!");
+        }else if (ArrayUtils.isAllBank(strings)){
+            log.error("数组元素为空!");
+        }else {
+            log.error("数组不为空!");
+        }
+    }
+
 }
