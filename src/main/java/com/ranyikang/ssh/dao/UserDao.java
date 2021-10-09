@@ -3,6 +3,7 @@ package com.ranyikang.ssh.dao;
 import com.ranyikang.ssh.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
@@ -27,4 +28,16 @@ public interface UserDao extends JpaRepository<User, Integer>, PagingAndSortingR
      */
     @Query("select u from User u where u.id = :id")
     User selectById(@Param("id") Integer id);
+
+
+    /**
+     * 逻辑删除 User 数据,注意使用自定义的SQL语句时,此处的表名不能用实体对象,而是需要用对应表名
+     *
+     * @param id 需要删除的数据 Id
+     * @param deleted 删除标志值,统一为 true;
+     * @return 返回数据更新操作结果
+     */
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update sys_user  set deleted = ?1 where id = ?2",nativeQuery = true)
+    int updateUserForDeleted(@Param("id") Integer id, @Param("deleted") boolean deleted);
 }

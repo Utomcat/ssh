@@ -1,9 +1,11 @@
 package com.ranyikang.ssh;
 
+import com.ranyikang.ssh.service.EchartsServiceImpl;
 import com.ranyikang.ssh.util.ArrayUtils;
 import com.ranyikang.ssh.util.DataBaseUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
@@ -12,6 +14,9 @@ import java.util.List;
 @Slf4j
 @SpringBootTest
 class SshApplicationTests {
+
+    @Autowired
+    private EchartsServiceImpl echartsService;
 
     @Test
     void contextLoads() {
@@ -51,6 +56,11 @@ class SshApplicationTests {
         }else {
             log.error("数组不为空!");
         }
+    }
+
+    @Test
+    void test3() {
+        echartsService.getData();
     }
 
 }

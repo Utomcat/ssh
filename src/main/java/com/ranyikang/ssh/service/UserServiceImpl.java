@@ -6,12 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * CLASS_NAME: UserServic<br/>
+ * CLASS_NAME: UserServiceImpl<br/>
  * Description: 用户业务操作类<br/>
  *
  * @author ranYk <br/>
@@ -75,17 +74,24 @@ public class UserServiceImpl {
         }
     }
 
+    /**
+     * 删除一条 User 数据
+     *
+     * @param user 需要删除的 User 对象
+     * @return 返回操作结果
+     * @throws Exception 抛出异常
+     */
     @Transactional(rollbackFor = Exception.class)
     public boolean deleted(User user) throws Exception {
         Integer id = user.getId();
-        if (null == id){
+        if (null == id) {
             throw new Exception("需删除数据的ID不存在,不能删除!");
         } else {
             Optional<User> optionalUser = userDao.findById(id);
-            if (optionalUser.isPresent()){
-                User resultUser = userDao.save(user);
-                return resultUser.getId() > 0;
-            }else {
+            if (optionalUser.isPresent()) {
+                int result = userDao.updateUserForDeleted(user.getId(), true);
+                return result > 0;
+            } else {
                 throw new Exception("依据数据的ID未能查询到数据,不能删除!");
             }
         }

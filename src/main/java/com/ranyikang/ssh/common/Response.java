@@ -33,6 +33,10 @@ public class Response implements Serializable {
      */
     private String message = "success";
     /**
+     * 兼容 layui table 数据
+     */
+    private String msg = "success";
+    /**
      * 请求响应状态,如: 响应成功 true; 响应失败: false;
      */
     private boolean status = true;
@@ -61,6 +65,7 @@ public class Response implements Serializable {
     private Response(int code, String message, boolean status) {
         this.code = code;
         this.message = message;
+        this.msg = message;
         this.status = status;
     }
 
@@ -73,6 +78,7 @@ public class Response implements Serializable {
     private Response(int code, String message) {
         this.code = code;
         this.message = message;
+        this.msg = message;
     }
 
     /**
@@ -86,6 +92,7 @@ public class Response implements Serializable {
     private Response(int code, String message, boolean status, Object data) {
         this.code = code;
         this.message = message;
+        this.msg = message;
         this.status = status;
         this.data = data;
     }
@@ -118,6 +125,11 @@ public class Response implements Serializable {
     @SuppressWarnings("all")
     public static Response valueOfList(List list) {
         return builder().status(200).message(SUCCESS.getMessage()).list(list).build();
+    }
+
+    @SuppressWarnings("all")
+    public static  Response valueOfDate(List list){
+        return builder().status(200).message(SUCCESS.getMessage()).listOfDate(list).build();
     }
 
     public static Response valueOfCode(int code) {
@@ -177,6 +189,13 @@ public class Response implements Serializable {
             paged.put("list", list);
             //TODO 此处需要增加对应的分页数据总量的查询
             this.data = paged;
+            return this;
+        }
+
+        @SuppressWarnings("all")
+        public Response.ResponseBuilder listOfDate(List list) {
+            //TODO 此处需要增加对应的分页数据总量的查询
+            this.data = list;
             return this;
         }
 

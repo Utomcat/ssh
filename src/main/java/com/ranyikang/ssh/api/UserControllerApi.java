@@ -6,7 +6,6 @@ import com.ranyikang.ssh.service.UserServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * CLASS_NAME: UserControllerApi<br/>
@@ -44,8 +43,6 @@ public class UserControllerApi {
         return Response.valueOfList(userServiceImpl.findAllUser());
     }
 
-
-
     /**
      * 新增一条数据记录
      *
@@ -68,6 +65,13 @@ public class UserControllerApi {
         return Response.valueOfObject(userServiceImpl.save(user));
     }
 
+    /**
+     * 单个删除已存在的数据记录
+     *
+     * @param user 需要删除的数据 User 对象
+     * @return 返货操作结果: true: 操作成功; false: 操作失败;
+     * @throws Exception 抛出异常
+     */
     @PostMapping("deleted")
     public Response deleted(@RequestBody User user) throws Exception {
         try {
