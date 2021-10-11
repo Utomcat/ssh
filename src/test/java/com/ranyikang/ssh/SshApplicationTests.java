@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -58,9 +59,60 @@ class SshApplicationTests {
         }
     }
 
+    /**
+     * ECharts 数据获取内容
+     */
     @Test
     void test3() {
         echartsService.getData();
+    }
+
+    /**
+     * 换行符字符串输出结果验证
+     */
+    @Test
+    void test4() {
+        String str = "Alcohol/\nFermented";
+        String str1 = "Alcohol/\\nFermented";
+        // 输出结果为 Alcohol/
+        //Fermented
+        log.error(str);
+        // 输出结果为 Alcohol/\nFermented
+        log.error(str1);
+
+    }
+
+    /**
+     * org.springframework.util.StringUtils 类 hasText 和  hasLength 方法测试
+     */
+    @Test
+    @SuppressWarnings("all")
+    void test5() {
+        String str0 = null;
+        String str1 = "";
+        String str2 = " ";
+        String str3 = "      ";
+        String str4 = "a %";
+        // false
+        log.error("str0 使用 StringUtils.hasText() 方法结果为   {}", StringUtils.hasText(str0));
+        // false
+        log.error("str0 使用 StringUtils.hasLength() 方法结果为   {}", StringUtils.hasLength(str0));
+        // false
+        log.error("str1 使用 StringUtils.hasText() 方法结果为   {}", StringUtils.hasText(str1));
+        // false
+        log.error("str1 使用 StringUtils.hasLength() 方法结果为   {}", StringUtils.hasLength(str1));
+        // false
+        log.error("str2 使用 StringUtils.hasText() 方法结果为   {}", StringUtils.hasText(str2));
+        // true
+        log.error("str2 使用 StringUtils.hasLength() 方法结果为   {}", StringUtils.hasLength(str2));
+        // false
+        log.error("str3 使用 StringUtils.hasText() 方法结果为   {}", StringUtils.hasText(str3));
+        // true
+        log.error("str3 使用 StringUtils.hasLength() 方法结果为   {}", StringUtils.hasLength(str3));
+        // true
+        log.error("str4 使用 StringUtils.hasText() 方法结果为   {}", StringUtils.hasText(str4));
+        // true
+        log.error("str4 使用 StringUtils.hasLength() 方法结果为   {}", StringUtils.hasLength(str4));
     }
 
 }

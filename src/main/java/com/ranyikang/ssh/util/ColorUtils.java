@@ -12,6 +12,11 @@ import java.util.Random;
  */
 public class ColorUtils {
 
+    /**
+     * 随机生成 16 进制的颜色值
+     *
+     * @return 返回生成的颜色值, 格式为 #FFFFFF
+     */
     public static String generateHexadecimalColor() {
         //红色
         String red;

@@ -8,6 +8,7 @@ import com.ranyikang.ssh.vo.SunburstDrinkVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -37,7 +38,14 @@ public class EchartsServiceImpl {
      * 零字符串
      */
     private static final String ZERO_STR = "0";
-
+    /**
+     * Integer 类型的零值
+     */
+    private static final Integer ZERO_INT = 0;
+    /**
+     * 换行字符串
+     */
+    private static final String WRAP_STR = "\\n";
 
     /**
      * 获取 ECharts 显示数据 sunburst-drink 类型的数据
@@ -69,13 +77,38 @@ public class EchartsServiceImpl {
         });
         groupMap.remove(ZERO_STR);
         traverseData(groupMap, result);
+        log.error("当前 groupMap 的结果长度为: {}", groupMap.size());
         log.error("当前的result的结果为: {}", result.size());
     }
 
+    /**
+     * 遍历数据,将查询结果按照树形结构组装到返回结果 List 集合中
+     *
+     * @param map    查询结果分组后的 Map 集合,分组条件为按 parentId 属性值分组
+     * @param result 返回的结果数据 List 集合
+     */
     private void traverseData(Map<String, List<SunburstDrinkEntity>> map, List<SunburstDrinkVo> result) {
         List<String> tempKey = new ArrayList<>();
+        traverseData(map, result, tempKey);
+        if (!map.isEmpty()) {
+            tempKey.forEach(map::remove);
+            tempKey.clear();
+        }
+        if (map.size() > 0) {
+            traverseData(map, result);
+        }
+    }
+
+    /**
+     * 遍历数据,递归循环调用方法,将结果数据按照树形结构放入返回结果 List 集合中,同时将已经遍历过的数据放入 Map 需要移除的 Key List 集合中
+     *
+     * @param map     查询结果分组后的 Map 集合,分组条件为按 parentId 属性值分组
+     * @param result  返回结果数据 List 集合
+     * @param tempKey 需要移除 Map 数据的 key 值 List 集合
+     */
+    private void traverseData(Map<String, List<SunburstDrinkEntity>> map, List<SunburstDrinkVo> result, List<String> tempKey) {
         map.forEach((key, list) -> {
-            if (null != result && !result.isEmpty()){
+            if (null != result && !result.isEmpty()) {
                 result.forEach(item -> {
                     if (item.getId().equals(key)) {
                         List<SunburstDrinkVo> conversionResult = conversionEntityList(list);
@@ -84,25 +117,31 @@ public class EchartsServiceImpl {
                     } else {
                         Map<String, List<SunburstDrinkEntity>> subMap = new HashMap<>(1);
                         subMap.put(key, list);
-                        traverseData(subMap, item.getChildren());
+                        traverseData(subMap, item.getChildren(), tempKey);
                     }
                 });
             }
         });
-        if (!map.isEmpty()){
-            tempKey.forEach(map::remove);
-            tempKey.clear();
-        }
     }
 
+    /**
+     * 将数据库 Entity 实体对象 List 集合,转换为 VO 对象 List 集合
+     *
+     * @param list Entity 实体对象 List 集合
+     * @return 返回转换后的 VO 对象 List 集合
+     */
     private List<SunburstDrinkVo> conversionEntityList(List<SunburstDrinkEntity> list) {
         List<SunburstDrinkVo> result = new ArrayList<>(list.size());
         list.forEach(item -> {
             SunburstDrinkVo entityVo = new SunburstDrinkVo();
             BeanUtils.copyProperties(item, entityVo);
             entityVo.setItemStyle(new ItemStyle(ColorUtils.generateHexadecimalColor()));
-            if (entityVo.getValue() == 0){
+            if (ZERO_INT.equals(entityVo.getValue())) {
                 entityVo.setValue(null);
+            }
+            String name = entityVo.getName();
+            if (StringUtils.hasText(name) && name.contains(WRAP_STR)) {
+                entityVo.setName(name.replace(WRAP_STR, "\n"));
             }
             result.add(entityVo);
         });
