@@ -1,15 +1,15 @@
 -- 新增根级数据
 insert into sunburst_drink(id, parent_id, name, value)
 values
-       (UUID(),NULL,'Flora',0),
-       (UUID(),NULL,'Fruity',0),
-       (UUID(),NULL,'Sour/\nFermented',0),
-       (UUID(),NULL,'Green/\nVegetative',0),
-       (UUID(),NULL,'Other',0),
-       (UUID(),NULL,'Roasted',0),
-       (UUID(),NULL,'Spices',0),
-       (UUID(),NULL,'Nutty/\nCocoa',0),
-       (UUID(),NULL,'Sweet',0);
+       (UUID(),'0','Flora',0),
+       (UUID(),'0','Fruity',0),
+       (UUID(),'0','Sour/\nFermented',0),
+       (UUID(),'0','Green/\nVegetative',0),
+       (UUID(),'0','Other',0),
+       (UUID(),'0','Roasted',0),
+       (UUID(),'0','Spices',0),
+       (UUID(),'0','Nutty/\nCocoa',0),
+       (UUID(),'0','Sweet',0);
 
 -- 新增 Flora 一级子级数据
 insert into sunburst_drink(id, parent_id, name, value)
