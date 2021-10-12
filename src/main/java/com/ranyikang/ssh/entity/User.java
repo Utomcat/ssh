@@ -1,11 +1,9 @@
 package com.ranyikang.ssh.entity;
 
 import lombok.*;
-import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Objects;
 
 /**
  * CLASS_NAME: User<br/>
@@ -17,11 +15,11 @@ import java.util.Objects;
  */
 @Getter
 @Setter
+@Entity
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "sys_user")
+@Table(name = "sys_user",schema = "test")
 public class User implements Serializable {
 
     private static final long serialVersionUID = 3559914667481191591L;
@@ -44,20 +42,4 @@ public class User implements Serializable {
     @Column(name = "deleted", length = 1)
     private boolean deleted = Boolean.FALSE;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-            return false;
-        }
-        User user = (User) o;
-        return Objects.equals(id, user.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return 0;
-    }
 }

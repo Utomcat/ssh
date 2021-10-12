@@ -5,6 +5,7 @@ import lombok.*;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 
 /**
@@ -17,10 +18,11 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
+@Entity
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "sunburst_drink")
+@Table(name = "sunburst_drink",schema = "test")
 public class SunburstDrinkEntity implements Serializable {
 
     private static final long serialVersionUID = -3272998801433787813L;
