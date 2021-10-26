@@ -4,5 +4,5 @@ create table sys_user
         primary key,
     name    varchar(32)      null comment '姓名',
     deleted bit default b'0' null comment '逻辑删除标志: false:未删除(默认); true:已删除;'
-)
+) character set utf8mb4
     comment '测试用户表';
