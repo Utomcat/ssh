@@ -10,7 +10,7 @@ spring:
       #设置数据库表的结构操作方式: create: 每次都会重新创建业务表; update: 只做更新表结构;
       ddl-auto: update
     # 显示执行 SQL 语句
-    show-sql: true
+    show-sql: false
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
       hibernate:
@@ -18,5 +18,11 @@ spring:
         format_sql: true
         use_sql_comments: true
 
+# 配置服务器端口
 server:
   port: 8083
+
+# 配置正式环境中的日志输出打印级别,日志打印级别 TRACE < DEBUG < INFO < WARN < ERROR < FATAL
+logging:
+  level:
+   root: ERROR
