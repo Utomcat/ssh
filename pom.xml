@@ -15,6 +15,8 @@
     <description>ssh</description>
     <properties>
         <java.version>1.8</java.version>
+        <mysql.connector.java>8.0.27</mysql.connector.java>
+        <spring.boot.maven.plugin>2.6.2</spring.boot.maven.plugin>
         <repackage.classifier/>
     </properties>
     <dependencies>
@@ -45,6 +47,7 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <scope>runtime</scope>
+            <version>${mysql.connector.java}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -65,7 +68,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-maven-plugin</artifactId>
-            <version>2.5.5</version>
+            <version>${spring.boot.maven.plugin}</version>
         </dependency>
     </dependencies>
 
