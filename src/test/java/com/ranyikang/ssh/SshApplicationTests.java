@@ -51,7 +51,6 @@ class SshApplicationTests {
     }
 
     @Test
-    @SuppressWarnings("all")
     void test2() {
         String[] strings = new String[4];
         if (strings == null) {
@@ -90,7 +89,6 @@ class SshApplicationTests {
      * org.springframework.util.StringUtils 类 hasText 和  hasLength 方法测试
      */
     @Test
-    @SuppressWarnings("all")
     void test5() {
         String str0 = null;
         String str1 = "";
@@ -120,13 +118,11 @@ class SshApplicationTests {
     }
 
     @Test
-    @SuppressWarnings("all")
     void test6() {
         Atest atest = new Atest();
     }
 
     @Test
-    @SuppressWarnings("all")
     void test7() {
         String a = null;
         if (a == null) {
@@ -136,14 +132,14 @@ class SshApplicationTests {
     }
 
     @Test
-    @SuppressWarnings("all")
+
     void test8() {
         String a = "aaAAAAAAf";
         System.out.println(a.substring(a.length() - 4));
     }
 
     @Test
-    @SuppressWarnings("all")
+
     void test9() {
         //log.info("结果值 ==> {}", lengthOfLongestSubstring("abcabcbb"));
         //log.info("结果值 ==> {}", lengthOfLongestSubstring("bbbbb"));
@@ -175,7 +171,6 @@ class SshApplicationTests {
      * @param s 传入需要确认的字符串
      * @return 返回传入字符串中无重复字符的最长子串长度
      */
-    @SuppressWarnings("unused")
     int lengthOfLongestSubstring(String s) {
         char[] chars = s.toCharArray();
         StringBuilder sb = new StringBuilder();
@@ -203,7 +198,6 @@ class SshApplicationTests {
      * @param nums2 需要判断的数组二
      * @return 返回两个数组的中位数
      */
-    @SuppressWarnings("unused")
     double findMedianSortedArrays(int[] nums1, int[] nums2) {
         List<Integer> list = new ArrayList<>(nums1.length + nums2.length);
         for (int num : nums1) {
@@ -235,5 +229,16 @@ class SshApplicationTests {
     public String longestPalindrome(String s) {
 
         return null;
+    }
+
+    @Test
+    void test10(){
+        int a = 1;
+        int b = 2;
+        log.error("a: {}, b: {}", a, b);
+        a += 1;
+        b =+ 1;
+        log.error("a: {}, b: {}", a, b);
+
     }
 }

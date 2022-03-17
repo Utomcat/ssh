@@ -13,10 +13,11 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>ssh</name>
     <description>ssh</description>
+    <packaging>jar</packaging>
     <properties>
         <java.version>1.8</java.version>
-        <mysql.connector.java>8.0.27</mysql.connector.java>
-        <spring.boot.maven.plugin>2.6.2</spring.boot.maven.plugin>
+        <mysql.connector.java>8.0.28</mysql.connector.java>
+        <spring.boot.maven.plugin>2.6.4</spring.boot.maven.plugin>
         <repackage.classifier/>
     </properties>
     <dependencies>
@@ -69,6 +70,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-maven-plugin</artifactId>
             <version>${spring.boot.maven.plugin}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.zxing/core -->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.4.1</version>
         </dependency>
     </dependencies>
 
