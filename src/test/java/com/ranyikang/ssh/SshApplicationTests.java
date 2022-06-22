@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -241,4 +242,11 @@ class SshApplicationTests {
         log.error("a: {}, b: {}", a, b);
 
     }
+
+    @Test
+    void test11(){
+        Date date = new Date();
+        log.info("aaaaaaaaaaaaaaaaaaa");
+    }
+
 }

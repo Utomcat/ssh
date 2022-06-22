@@ -2,8 +2,15 @@ package com.ranyikang.ssh.service;
 
 import com.ranyikang.ssh.dao.UserDao;
 import com.ranyikang.ssh.entity.User;
+import com.ranyikang.ssh.exception.NullResultException;
+import com.ranyikang.ssh.exception.ParameterException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -17,6 +24,7 @@ import java.util.Optional;
  * @version 1.0
  * @date 2021 - 09 - 02 <br/>
  */
+@Slf4j
 @Service("userServiceImpl")
 public class UserServiceImpl {
 
@@ -89,11 +97,36 @@ public class UserServiceImpl {
         } else {
             Optional<User> optionalUser = userDao.findById(id);
             if (optionalUser.isPresent()) {
-                int result = userDao.updateUserForDeleted(user.getId(), true);
-                return result > 0;
+                userDao.updateUserForDeleted(user.getId(), true);
+                User u = userDao.selectById(user.getId());
+                return u != null && (optionalUser.get().isDeleted() != u.isDeleted());
             } else {
                 throw new Exception("依据数据的ID未能查询到数据,不能删除!");
             }
         }
+    }
+
+    /**
+     * 通过 name 属性值查询 {@link User} 对象
+     *
+     * @param name 需要查询的 name 属性值
+     * @return 返回查询到的数据对象
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public boolean dealMethod(String name) throws ParameterException, NullResultException {
+        if (!StringUtils.hasText(name)) {
+            log.error("service 传入的参数不存在,请核查!");
+            throw new ParameterException("service 传入的参数不存在,请核查!");
+        }
+        Pageable pageable = Pageable.ofSize(1);
+        Page<User> users = userDao.selectUserBySpecifyName(name, pageable);
+        if (users == null) {
+            log.error("service 未查询到指定条件的结果!");
+            throw new NullResultException("service  未查询到指定条件的结果!");
+        } else {
+            users.getContent();
+        }
+        userDao.updateUserForDeleted(users.getContent().get(0).getId(), !users.getContent().get(0).isDeleted());
+        return true;
     }
 }

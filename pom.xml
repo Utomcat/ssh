@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.4</version>
+        <version>2.5.14</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.ranyikang</groupId>
@@ -16,8 +16,8 @@
     <packaging>jar</packaging>
     <properties>
         <java.version>1.8</java.version>
-        <mysql.connector.java>8.0.28</mysql.connector.java>
-        <spring.boot.maven.plugin>2.6.4</spring.boot.maven.plugin>
+        <mysql.connector.java>8.0.29</mysql.connector.java>
+        <spring.boot.maven.plugin>2.7.0</spring.boot.maven.plugin>
         <repackage.classifier/>
     </properties>
     <dependencies>
@@ -70,12 +70,24 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-maven-plugin</artifactId>
             <version>${spring.boot.maven.plugin}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.codehaus.plexus</groupId>
+                    <artifactId>plexus-utils</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.codehaus.plexus/plexus-utils -->
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-utils</artifactId>
+            <version>3.4.2</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.zxing/core -->
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>core</artifactId>
-            <version>3.4.1</version>
+            <version>3.5.0</version>
         </dependency>
     </dependencies>
 
