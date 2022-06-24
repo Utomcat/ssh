@@ -6,8 +6,6 @@ import com.ranyikang.ssh.service.UserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
@@ -26,10 +24,10 @@ public class CustomScheduledTask {
     @Resource
     private UserServiceImpl userService;
 
-    @Scheduled(cron = "0/5 * * * * ? ")
+    @Scheduled(cron = "1/10 * * * * ? ")
     public void task1(){
         try{
-            boolean admin = userService.dealMethod("法外狂徒张三");
+            boolean admin = userService.dealMethod("Tom");
             log.info("执行结果为 {}", admin);
         }catch (Exception e){
             if (e.getClass().toString().equals(NullResultException.class.toString())){

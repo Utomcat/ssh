@@ -11,6 +11,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * CLASS_NAME: UserDao<br/>
@@ -38,10 +39,10 @@ public interface UserDao extends CrudRepository<User, Integer>, JpaRepository<Us
      *
      * @param id      需要删除的数据 Id
      * @param deleted 删除标志值,统一为 true;
-     * @return 返回数据更新操作结果
      */
     @Modifying(clearAutomatically = true)
-    @Query(value = "update sys_user  set deleted = ?1 where id = ?2", nativeQuery = true)
+    @Transactional(rollbackFor = Exception.class)
+    @Query(value = "update sys_user  set deleted = ?2 where id = ?1", nativeQuery = true)
     void updateUserForDeleted(@Param("id") Integer id, @Param("deleted") boolean deleted);
 
 

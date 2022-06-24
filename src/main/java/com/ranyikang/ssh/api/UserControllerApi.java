@@ -28,8 +28,8 @@ public class UserControllerApi {
      * @param id 需要查询的数据主键ID
      * @return 返回获取到的User数据对象
      */
-    @GetMapping("getUserById")
-    public Response getUserById(Integer id) {
+    @GetMapping("getUserById/{id}")
+    public Response getUserById(@PathVariable("id") Integer id) {
         return Response.valueOfObject(userServiceImpl.queryUserById(id));
     }
 
