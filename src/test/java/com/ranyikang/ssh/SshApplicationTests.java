@@ -1,17 +1,24 @@
 package com.ranyikang.ssh;
 
+import com.alibaba.fastjson.JSON;
 import com.ranyikang.ssh.entity.Atest;
 import com.ranyikang.ssh.service.EchartsServiceImpl;
 import com.ranyikang.ssh.util.ArrayUtils;
 import com.ranyikang.ssh.util.DataBaseUtils;
+import com.ranyikang.ssh.util.EasyExcelUtils;
+import com.ranyikang.ssh.vo.DemoData;
+import com.ranyikang.ssh.vo.FillInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +27,26 @@ import java.util.stream.Collectors;
 @SpringBootTest
 @SuppressWarnings("all")
 class SshApplicationTests {
+
+    /**
+     * 文件根目录
+     */
+    @Value("${file.root.path}")
+    private String fileRootPath;
+    /**
+     * 自定义姓名数组
+     */
+    private List<String> names = Arrays.asList(new String[]{"韩佳", "刘建国", "牟继攀", "冉意康", "宋敏", "唐智林", "杨博坤"});
+
+    private static final String SOJOURN_HISTORY = "否";
+
+    private static final String HEALTH_CONDITION = "否";
+
+    private static final String GREEN_CODE = "是";
+    private static final String VACCINE_SITUATION = "第三针";
+    private static final String REST_ON_THE_JOB_STATUS = "复工后:年假、节假日休假、病事假等正常请休假";
+    private static final String NORMAL_ON_THE_JOB_STATUS = "今日正常上班";
+
 
     @Autowired
     private EchartsServiceImpl echartsService;
@@ -133,14 +160,12 @@ class SshApplicationTests {
     }
 
     @Test
-
     void test8() {
         String a = "aaAAAAAAf";
         System.out.println(a.substring(a.length() - 4));
     }
 
     @Test
-
     void test9() {
         //log.info("结果值 ==> {}", lengthOfLongestSubstring("abcabcbb"));
         //log.info("结果值 ==> {}", lengthOfLongestSubstring("bbbbb"));
@@ -233,20 +258,79 @@ class SshApplicationTests {
     }
 
     @Test
-    void test10(){
+    void test10() {
         int a = 1;
         int b = 2;
         log.error("a: {}, b: {}", a, b);
         a += 1;
-        b =+ 1;
+        b = +1;
         log.error("a: {}, b: {}", a, b);
 
     }
 
     @Test
-    void test11(){
+    void test11() {
         Date date = new Date();
         log.info("aaaaaaaaaaaaaaaaaaa");
+    }
+
+
+    /**
+     * EasyExcel 简单读取 Excel 数据方式一
+     */
+    @Test
+    void test12() {
+        List<DemoData> dataList = EasyExcelUtils.simpleRead(fileRootPath, "file1.xlsx", new DemoData());
+        dataList.forEach(data -> {
+            log.info("读取到一条数据{}", JSON.toJSONString(data));
+        });
+    }
+
+    /**
+     * EasyExcel 简单读取 Excel 数据方式二
+     */
+    @Test
+    void test13() {
+        List<DemoData> dataList = EasyExcelUtils.simpleRead2(fileRootPath, "file1.xlsx", new DemoData());
+        dataList.forEach(data -> {
+            log.info("读取到一条数据{}", JSON.toJSONString(data));
+        });
+    }
+
+    @Test
+    void test14() {
+        int value = LocalDateTime.now().getDayOfWeek().getValue();
+        List<FillInfoVo> dataList = EasyExcelUtils.complexRead(fileRootPath, "填报信息2022-06-25--外包.xlsx", 7, new FillInfoVo());
+        log.info("本次读取的数据长度为: {}", dataList.size());
+        dataList.forEach(data -> {
+            if (names.contains(data.getName())) {
+                if (!SOJOURN_HISTORY.equals(data.getSojournHistory())) {
+                    log.error("{}  旅居史填报有异常!", data.getName());
+                }
+                if (!HEALTH_CONDITION.equals(data.getHealthCondition())){
+                    log.error("{} 健康情况填报有异常!", data.getName());
+                }
+                if (Double.valueOf(data.getBodyTemperature()) < 36 || Double.valueOf(data.getBodyTemperature()) > 37){
+                    log.error("{} 体温填报有异常!", data.getName());
+                }
+                if (!GREEN_CODE.equals(data.getGreenCode())){
+                    log.error("{} 绿码填报有异常!", data.getName());
+                }
+                if (!VACCINE_SITUATION.equals(data.getVaccineSituation())){
+                    log.error("{} 接种情况填报有异常!", data.getName());
+                }
+                if (value>1 && value <6){
+                    if (!NORMAL_ON_THE_JOB_STATUS.equals(data.getOnTheJobStatus()) && !StringUtils.hasText(data.getRemark())){
+                        log.error("{} 工作日工作状态填写为休息,但未填写备注!", data.getName());
+                    }
+                }else if (value < 1 || value > 6){
+                    if (!REST_ON_THE_JOB_STATUS.equals(data.getOnTheJobStatus()) && !StringUtils.hasText(data.getRemark())){
+                        log.error("{} 休息日工作状态填写为上班,但未填写备注!", data.getName());
+                    }
+                }
+
+            }
+        });
     }
 
 }

@@ -4,7 +4,6 @@ import com.ranyikang.ssh.exception.NullResultException;
 import com.ranyikang.ssh.exception.ParameterException;
 import com.ranyikang.ssh.service.UserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -24,7 +23,7 @@ public class CustomScheduledTask {
     @Resource
     private UserServiceImpl userService;
 
-    @Scheduled(cron = "1/10 * * * * ? ")
+    // @Scheduled(cron = "1/10 * * * * ? ")
     public void task1(){
         try{
             boolean admin = userService.dealMethod("Tom");

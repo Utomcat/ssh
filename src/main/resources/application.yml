@@ -1,3 +1,8 @@
 spring:
   profiles:
     active: dev
+
+# 自定义配置
+file:
+  root:
+    path: E:\Work\IdeaWorkSpace\sshDemo\src\main\resources\doc
