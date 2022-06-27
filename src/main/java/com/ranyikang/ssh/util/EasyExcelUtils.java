@@ -41,7 +41,7 @@ public class EasyExcelUtils {
         String filePath = fileRootPath + File.separator + fileName;
         // 这里 需要指定读用哪个class去读，然后读取第一个sheet 文件流会自动关闭
         // 这里每次会读取100条数据 然后返回过来 直接调用使用数据就行
-        EasyExcel.read(filePath, t.getClass(), new PageReadListener<T>(result::set)).sheet().doRead();
+        EasyExcel.read(filePath, t.getClass(), new PageReadListener<>(result::set)).sheet().doRead();
         return result.get();
     }
 
