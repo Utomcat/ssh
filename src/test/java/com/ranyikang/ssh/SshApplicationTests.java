@@ -7,6 +7,7 @@ import com.ranyikang.ssh.util.ArrayUtils;
 import com.ranyikang.ssh.util.DataBaseUtils;
 import com.ranyikang.ssh.util.EasyExcelUtils;
 import com.ranyikang.ssh.vo.DemoData;
+import com.ranyikang.ssh.vo.FcInterDtlSubVo;
 import com.ranyikang.ssh.vo.FcInterDtlVo;
 import com.ranyikang.ssh.vo.FillInfoVo;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -356,10 +358,41 @@ class SshApplicationTests {
 
     @Test
     void test16(){
-        List<FcInterDtlVo> dataList = EasyExcelUtils.complexRead(fileRootPath, "查看数据.xlsx", 3, new FcInterDtlVo());
+        List<FcInterDtlSubVo> list = new ArrayList<>();
+        AtomicReference<List<FcInterDtlSubVo>> result = new AtomicReference<>();
+        result.set(list);
+        List<FcInterDtlVo> dataList = EasyExcelUtils.complexRead(fileRootPath, "查看数据.xlsx", 3, 93, new FcInterDtlVo());
+        log.info("查询的数据总量为: {}", dataList.size());
         dataList.forEach(data -> {
-            log.info("当前数据: ==> {}", JSON.toJSONString(data));
-
+            // 当前数据: ==> {"accName":"成都锦江绿道建设投资集团有限公司（二级本部）","account":"1000012120000004","curName":"人民币","interest":"118,416.67","interestRatePercent":"2.10%","interestTime":"2022-04-17","sigma":"2,030,000,000.00"}
+            // log.info("当前数据: ==> {}", JSON.toJSONString(data));
+            FcInterDtlSubVo fcInterDtlSubVo = new FcInterDtlSubVo();
+            fcInterDtlSubVo.setAccount(data.getAccount());
+            fcInterDtlSubVo.setAccName(data.getAccName());
+            fcInterDtlSubVo.setBigSigma(new BigDecimal(data.getSigma().replace(",","")));
+            try {
+            fcInterDtlSubVo.setBigInterestRatePercent(new BigDecimal(data.getInterestRatePercent().replace("%","")).divide(new BigDecimal(100)));
+            }catch (Exception e){
+                log.info("当前异常数据的时间为 {}", data.getInterestTime());
+                throw e;
+            }
+            result.get().add(fcInterDtlSubVo);
         });
+        List<FcInterDtlSubVo> subVoList = result.get();
+        FcInterDtlSubVo subVo = new FcInterDtlSubVo();
+        subVo.setBigInterest(BigDecimal.ZERO);
+        subVo.setBigSigma(BigDecimal.ZERO);
+        AtomicReference<FcInterDtlSubVo> summary = new AtomicReference<>();
+        summary.set(subVo);
+        subVoList.forEach(data -> {
+            data.setBigInterest(data.getBigSigma().multiply(data.getBigInterestRatePercent()).divide(new BigDecimal(360), 4 , BigDecimal.ROUND_HALF_UP));
+            log.info("当前账户利息数据为 ==> 账户: {} , 户名: {} , 积数: {} , 利率: {} , 利息: {}", data.getAccount(), data.getAccName(), data.getBigSigma().toString(), data.getBigInterestRatePercent().toString(), data.getBigInterest().toString());
+            if (summary.get().getBigInterestRatePercent() == null){
+                summary.get().setBigInterestRatePercent(data.getBigInterestRatePercent());
+            }
+            summary.get().setBigSigma(summary.get().getBigSigma().add(data.getBigSigma()));
+            summary.get().setBigInterest(summary.get().getBigInterest().add(data.getBigInterest()));
+        });
+        log.info("当前汇总利息数据为 ==>  积数: {} , 利率: {} , 利息: {}", summary.get().getBigSigma().toString(), summary.get().getBigInterestRatePercent().toString(), summary.get().getBigInterest().toString());
     }
 }

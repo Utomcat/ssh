@@ -98,5 +98,28 @@ public class EasyExcelUtils {
         return cachedDataList;
     }
 
+    public static <T> List<T> complexRead(String fileRootPath, String fileName, int startIndex, int endIndex, T t) {
+        List<T> cachedDataList = new ArrayList<>();
+        String filePath = fileRootPath + File.separator + fileName;
+        EasyExcel.read(filePath, t.getClass(), new AnalysisEventListener<T>() {
+            @Override
+            public void invoke(T data, AnalysisContext context) {
+                int sheetNo = context.readSheetHolder().getSheetNo();
+                if (sheetNo == 0) {
+                    int index = context.readRowHolder().getRowIndex();
+                    if (index >= startIndex && index <= endIndex) {
+                        cachedDataList.add(data);
+                    }
+                }
+            }
+
+            @Override
+            public void doAfterAllAnalysed(AnalysisContext context) {
+
+            }
+        }).sheet().doRead();
+        return cachedDataList;
+    }
+
 
 }
