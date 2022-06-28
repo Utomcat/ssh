@@ -7,14 +7,18 @@ import com.ranyikang.ssh.util.ArrayUtils;
 import com.ranyikang.ssh.util.DataBaseUtils;
 import com.ranyikang.ssh.util.EasyExcelUtils;
 import com.ranyikang.ssh.vo.DemoData;
+import com.ranyikang.ssh.vo.FcInterDtlVo;
 import com.ranyikang.ssh.vo.FillInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -45,7 +49,7 @@ class SshApplicationTests {
     private static final String GREEN_CODE = "是";
     private static final String VACCINE_SITUATION = "第三针";
     private static final String REST_ON_THE_JOB_STATUS = "复工后:年假、节假日休假、病事假等正常请休假";
-    private static final String NORMAL_ON_THE_JOB_STATUS = "今日正常上班";
+    private static final String NORMAL_ON_THE_JOB_STATUS = "复工后:今日正常上班";
 
 
     @Autowired
@@ -300,31 +304,31 @@ class SshApplicationTests {
     @Test
     void test14() {
         int value = LocalDateTime.now().getDayOfWeek().getValue();
-        List<FillInfoVo> dataList = EasyExcelUtils.complexRead(fileRootPath, "填报信息2022-06-25--外包.xlsx", 7, new FillInfoVo());
+        List<FillInfoVo> dataList = EasyExcelUtils.complexRead(fileRootPath, "填报信息2022-06-28-外包.xlsx", 7, new FillInfoVo());
         log.info("本次读取的数据长度为: {}", dataList.size());
         dataList.forEach(data -> {
             if (names.contains(data.getName())) {
                 if (!SOJOURN_HISTORY.equals(data.getSojournHistory())) {
                     log.error("{}  旅居史填报有异常!", data.getName());
                 }
-                if (!HEALTH_CONDITION.equals(data.getHealthCondition())){
+                if (!HEALTH_CONDITION.equals(data.getHealthCondition())) {
                     log.error("{} 健康情况填报有异常!", data.getName());
                 }
-                if (Double.valueOf(data.getBodyTemperature()) < 36 || Double.valueOf(data.getBodyTemperature()) > 37){
+                if (Double.valueOf(data.getBodyTemperature()) < 36 || Double.valueOf(data.getBodyTemperature()) > 37) {
                     log.error("{} 体温填报有异常!", data.getName());
                 }
-                if (!GREEN_CODE.equals(data.getGreenCode())){
+                if (!GREEN_CODE.equals(data.getGreenCode())) {
                     log.error("{} 绿码填报有异常!", data.getName());
                 }
-                if (!VACCINE_SITUATION.equals(data.getVaccineSituation())){
+                if (!VACCINE_SITUATION.equals(data.getVaccineSituation())) {
                     log.error("{} 接种情况填报有异常!", data.getName());
                 }
-                if (value>1 && value <6){
-                    if (!NORMAL_ON_THE_JOB_STATUS.equals(data.getOnTheJobStatus()) && !StringUtils.hasText(data.getRemark())){
+                if (value >= 1 && value <= 6) {
+                    if (!NORMAL_ON_THE_JOB_STATUS.equals(data.getOnTheJobStatus()) && !StringUtils.hasText(data.getRemark())) {
                         log.error("{} 工作日工作状态填写为休息,但未填写备注!", data.getName());
                     }
-                }else if (value < 1 || value > 6){
-                    if (!REST_ON_THE_JOB_STATUS.equals(data.getOnTheJobStatus()) && !StringUtils.hasText(data.getRemark())){
+                } else if (value < 1 || value > 6) {
+                    if (!REST_ON_THE_JOB_STATUS.equals(data.getOnTheJobStatus()) && !StringUtils.hasText(data.getRemark())) {
                         log.error("{} 休息日工作状态填写为上班,但未填写备注!", data.getName());
                     }
                 }
@@ -333,4 +337,29 @@ class SshApplicationTests {
         });
     }
 
+    /**
+     * 获取文件路径测试
+     */
+    @Test
+    void test15() throws IOException {
+        // 使用 getResource("").getPath()
+        String path1 = this.getClass().getClassLoader().getResource("").getPath();
+        String path2 = this.getClass().getClassLoader().getResource("填报信息2022-06-25--外包.xlsx").getPath();
+        InputStream in1 = this.getClass().getClassLoader().getResourceAsStream("填报信息2022-06-25--外包.xlsx");
+        InputStream in2 = this.getClass().getResourceAsStream("/" + "填报信息2022-06-25--外包.xlsx");
+        ClassPathResource classPathResource = new ClassPathResource("填报信息2022-06-25--外包.xlsx");
+        InputStream inputStream = classPathResource.getInputStream();
+
+        log.info("path1 ==> {}", path1);
+        log.info("path2 ==> {}", path2);
+    }
+
+    @Test
+    void test16(){
+        List<FcInterDtlVo> dataList = EasyExcelUtils.complexRead(fileRootPath, "查看数据.xlsx", 3, new FcInterDtlVo());
+        dataList.forEach(data -> {
+            log.info("当前数据: ==> {}", JSON.toJSONString(data));
+
+        });
+    }
 }
