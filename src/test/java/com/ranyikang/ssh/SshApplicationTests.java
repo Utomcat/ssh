@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.StringUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -35,22 +36,42 @@ import java.util.stream.Collectors;
 class SshApplicationTests {
 
     /**
-     * 文件根目录
+     * 文件根目录路径一
      */
-    @Value("${file.root.path}")
+    @Value("${file.root.path1}")
     private String fileRootPath;
+    /**
+     * 文件根目录路径二
+     */
+    @Value("${file.root.path2}")
+    private String fileRootPath2;
     /**
      * 自定义姓名数组
      */
     private List<String> names = Arrays.asList(new String[]{"韩佳", "刘建国", "牟继攀", "冉意康", "宋敏", "唐智林", "杨博坤"});
-
+    /**
+     * 旅居史正常值
+     */
     private static final String SOJOURN_HISTORY = "否";
-
+    /**
+     * 健康状态正常值
+     */
     private static final String HEALTH_CONDITION = "否";
-
+    /**
+     * 绿码正常值
+     */
     private static final String GREEN_CODE = "是";
+    /**
+     * 接种情况正常值
+     */
     private static final String VACCINE_SITUATION = "第三针";
+    /**
+     * 休息日/节假日在岗状态正常值
+     */
     private static final String REST_ON_THE_JOB_STATUS = "复工后:年假、节假日休假、病事假等正常请休假";
+    /**
+     * 工作日在岗状态正常值
+     */
     private static final String NORMAL_ON_THE_JOB_STATUS = "复工后:今日正常上班";
 
 
@@ -303,28 +324,48 @@ class SshApplicationTests {
         });
     }
 
+    /**
+     * 公司二维码填报信息下午检查单元测试
+     */
     @Test
     void test14() {
+        // 获取当天是周几
         int value = LocalDateTime.now().getDayOfWeek().getValue();
-        List<FillInfoVo> dataList = EasyExcelUtils.complexRead(fileRootPath, "填报信息2022-06-28-外包.xlsx", 7, new FillInfoVo());
+        // 获取文件路径 默认使用路径一
+        String path = fileRootPath;
+        // 判断路径一是否存在, 不存在则使用路径二
+        if (!new File(path).exists()) {
+            path = fileRootPath2;
+        }
+        // 读取指定路径中的 Excel 数据
+        List<FillInfoVo> dataList = EasyExcelUtils.complexRead(path, "填报信息2022-06-29-外包.xlsx", 7, new FillInfoVo());
+        // 打印获取的数据量
         log.info("本次读取的数据长度为: {}", dataList.size());
+        // 遍历查询结果, 判断指定人员的填报内容中是否有误
         dataList.forEach(data -> {
+            // 当当前遍历数据在指定的数组中,进行填报信息判断
             if (names.contains(data.getName())) {
+                // 判断旅居史
                 if (!SOJOURN_HISTORY.equals(data.getSojournHistory())) {
                     log.error("{}  旅居史填报有异常!", data.getName());
                 }
+                // 判断健康状态
                 if (!HEALTH_CONDITION.equals(data.getHealthCondition())) {
                     log.error("{} 健康情况填报有异常!", data.getName());
                 }
+                // 判断体温
                 if (Double.valueOf(data.getBodyTemperature()) < 36 || Double.valueOf(data.getBodyTemperature()) > 37) {
                     log.error("{} 体温填报有异常!", data.getName());
                 }
+                // 判断绿码
                 if (!GREEN_CODE.equals(data.getGreenCode())) {
                     log.error("{} 绿码填报有异常!", data.getName());
                 }
+                // 判断接种情况
                 if (!VACCINE_SITUATION.equals(data.getVaccineSituation())) {
                     log.error("{} 接种情况填报有异常!", data.getName());
                 }
+                // 判断在岗状态
                 if (value >= 1 && value <= 6) {
                     if (!NORMAL_ON_THE_JOB_STATUS.equals(data.getOnTheJobStatus()) && !StringUtils.hasText(data.getRemark())) {
                         log.error("{} 工作日工作状态填写为休息,但未填写备注!", data.getName());
@@ -334,7 +375,6 @@ class SshApplicationTests {
                         log.error("{} 休息日工作状态填写为上班,但未填写备注!", data.getName());
                     }
                 }
-
             }
         });
     }
@@ -356,12 +396,18 @@ class SshApplicationTests {
         log.info("path2 ==> {}", path2);
     }
 
+    /**
+     * 利息计算单元测试
+     */
     @Test
-    void test16(){
+    void test16() {
         List<FcInterDtlSubVo> list = new ArrayList<>();
-        AtomicReference<List<FcInterDtlSubVo>> result = new AtomicReference<>();
-        result.set(list);
-        List<FcInterDtlVo> dataList = EasyExcelUtils.complexRead(fileRootPath, "查看数据.xlsx", 3, 93, new FcInterDtlVo());
+        AtomicReference<List<FcInterDtlSubVo>> result = new AtomicReference<>(list);
+        String path = fileRootPath;
+        if (!new File(path).exists()) {
+            path = fileRootPath2;
+        }
+        List<FcInterDtlVo> dataList = EasyExcelUtils.complexRead(path, "查看数据.xlsx", 2, 93, new FcInterDtlVo());
         log.info("查询的数据总量为: {}", dataList.size());
         dataList.forEach(data -> {
             // 当前数据: ==> {"accName":"成都锦江绿道建设投资集团有限公司（二级本部）","account":"1000012120000004","curName":"人民币","interest":"118,416.67","interestRatePercent":"2.10%","interestTime":"2022-04-17","sigma":"2,030,000,000.00"}
@@ -369,10 +415,10 @@ class SshApplicationTests {
             FcInterDtlSubVo fcInterDtlSubVo = new FcInterDtlSubVo();
             fcInterDtlSubVo.setAccount(data.getAccount());
             fcInterDtlSubVo.setAccName(data.getAccName());
-            fcInterDtlSubVo.setBigSigma(new BigDecimal(data.getSigma().replace(",","")));
+            fcInterDtlSubVo.setBigSigma(new BigDecimal(data.getSigma().replace(",", "")));
             try {
-            fcInterDtlSubVo.setBigInterestRatePercent(new BigDecimal(data.getInterestRatePercent().replace("%","")).divide(new BigDecimal(100)));
-            }catch (Exception e){
+                fcInterDtlSubVo.setBigInterestRatePercent(new BigDecimal(data.getInterestRatePercent().replace("%", "")).divide(new BigDecimal(100)));
+            } catch (Exception e) {
                 log.info("当前异常数据的时间为 {}", data.getInterestTime());
                 throw e;
             }
@@ -382,16 +428,15 @@ class SshApplicationTests {
         FcInterDtlSubVo subVo = new FcInterDtlSubVo();
         subVo.setBigInterest(BigDecimal.ZERO);
         subVo.setBigSigma(BigDecimal.ZERO);
-        AtomicReference<FcInterDtlSubVo> summary = new AtomicReference<>();
-        summary.set(subVo);
+        AtomicReference<FcInterDtlSubVo> summary = new AtomicReference<>(subVo);
         subVoList.forEach(data -> {
-            data.setBigInterest(data.getBigSigma().multiply(data.getBigInterestRatePercent()).divide(new BigDecimal(360), 4 , BigDecimal.ROUND_HALF_UP));
+            data.setBigInterest(data.getBigSigma().multiply(data.getBigInterestRatePercent()).divide(new BigDecimal(360), 6, BigDecimal.ROUND_HALF_UP));
             log.info("当前账户利息数据为 ==> 账户: {} , 户名: {} , 积数: {} , 利率: {} , 利息: {}", data.getAccount(), data.getAccName(), data.getBigSigma().toString(), data.getBigInterestRatePercent().toString(), data.getBigInterest().toString());
-            if (summary.get().getBigInterestRatePercent() == null){
+            if (summary.get().getBigInterestRatePercent() == null) {
                 summary.get().setBigInterestRatePercent(data.getBigInterestRatePercent());
             }
-            summary.get().setBigSigma(summary.get().getBigSigma().add(data.getBigSigma()));
-            summary.get().setBigInterest(summary.get().getBigInterest().add(data.getBigInterest()));
+            summary.get().setBigSigma(summary.get().getBigSigma().add(data.getBigSigma()).setScale(6, BigDecimal.ROUND_HALF_UP));
+            summary.get().setBigInterest(summary.get().getBigInterest().add(data.getBigInterest()).setScale(6, BigDecimal.ROUND_HALF_UP));
         });
         log.info("当前汇总利息数据为 ==>  积数: {} , 利率: {} , 利息: {}", summary.get().getBigSigma().toString(), summary.get().getBigInterestRatePercent().toString(), summary.get().getBigInterest().toString());
     }

@@ -5,4 +5,5 @@ spring:
 # 自定义配置
 file:
   root:
-    path: E:\Work\IdeaWorkSpace\sshDemo\src\main\resources\doc
+    path1: E:\Work\IdeaWorkSpace\sshDemo\src\main\resources\doc
+    path2: E:\Workspace\Idea_workspace\ssh\src\main\resources\doc
