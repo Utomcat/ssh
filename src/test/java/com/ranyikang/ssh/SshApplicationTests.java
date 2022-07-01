@@ -18,9 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.StringUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -338,7 +336,7 @@ class SshApplicationTests {
             path = fileRootPath2;
         }
         // 读取指定路径中的 Excel 数据
-        List<FillInfoVo> dataList = EasyExcelUtils.complexRead(path, "填报信息2022-06-29-外包.xlsx", 7, new FillInfoVo());
+        List<FillInfoVo> dataList = EasyExcelUtils.complexRead(path, "填报信息2022-07-01-外包.xlsx", 7, new FillInfoVo());
         // 打印获取的数据量
         log.info("本次读取的数据长度为: {}", dataList.size());
         // 遍历查询结果, 判断指定人员的填报内容中是否有误
@@ -386,10 +384,10 @@ class SshApplicationTests {
     void test15() throws IOException {
         // 使用 getResource("").getPath()
         String path1 = this.getClass().getClassLoader().getResource("").getPath();
-        String path2 = this.getClass().getClassLoader().getResource("填报信息2022-06-25--外包.xlsx").getPath();
-        InputStream in1 = this.getClass().getClassLoader().getResourceAsStream("填报信息2022-06-25--外包.xlsx");
-        InputStream in2 = this.getClass().getResourceAsStream("/" + "填报信息2022-06-25--外包.xlsx");
-        ClassPathResource classPathResource = new ClassPathResource("填报信息2022-06-25--外包.xlsx");
+        String path2 = this.getClass().getClassLoader().getResource("填报信息2022-06-29-外包.xlsx").getPath();
+        InputStream in1 = this.getClass().getClassLoader().getResourceAsStream("填报信息2022-06-29-外包.xlsx");
+        InputStream in2 = this.getClass().getResourceAsStream("/" + "填报信息2022-06-29-外包.xlsx");
+        ClassPathResource classPathResource = new ClassPathResource("填报信息2022-06-29-外包.xlsx");
         InputStream inputStream = classPathResource.getInputStream();
 
         log.info("path1 ==> {}", path1);
@@ -439,5 +437,37 @@ class SshApplicationTests {
             summary.get().setBigInterest(summary.get().getBigInterest().add(data.getBigInterest()).setScale(6, BigDecimal.ROUND_HALF_UP));
         });
         log.info("当前汇总利息数据为 ==>  积数: {} , 利率: {} , 利息: {}", summary.get().getBigSigma().toString(), summary.get().getBigInterestRatePercent().toString(), summary.get().getBigInterest().toString());
+    }
+
+    @Test
+    void test17() {
+        String path = fileRootPath;
+        if (!new File(path).exists()) {
+            path = fileRootPath2;
+        }
+        path += File.separator + "QRcode.txt";
+        File file = new File(path);
+        StringBuffer buffer = new StringBuffer();
+        try {
+            FileReader fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                buffer.append(line);
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        String info = buffer.toString().substring(buffer.toString().indexOf("：") + 1);
+        String[] split = info.split(",");
+        for (String s : split) {
+            if (names.contains(s)) {
+                log.info("{} 二维码未填写", s);
+            }
+        }
+
+
     }
 }
