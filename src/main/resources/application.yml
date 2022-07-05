@@ -7,3 +7,12 @@ file:
   root:
     path1: E:\Work\IdeaWorkSpace\sshDemo\src\main\resources\doc
     path2: E:\Workspace\Idea_workspace\ssh\src\main\resources\doc
+
+value:
+  sojournHistory: 否
+  healthCondition: 否
+  greenCode: 是
+  vaccineSituation: 第三针
+  restOnTheJobStatus: 复工后:年假、节假日休假、病事假等正常请休假
+  normalOnTheJobStatus: 复工后:今日正常上班
+  startIndex: 7
