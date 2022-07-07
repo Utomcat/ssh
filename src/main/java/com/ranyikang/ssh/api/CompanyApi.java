@@ -95,8 +95,14 @@ public class CompanyApi {
         return Response.valueOfDate(companyService.queryAll());
     }
 
+    /**
+     * 新增一个项目组公司人员信息
+     *
+     * @param company 公司人员信息对象
+     * @return 返回新增后的人员对象信息
+     */
     @PostMapping("add")
-    public Response addMember(@RequestBody Company company){
+    public Response addMember(@RequestBody Company company) {
         Company result = companyService.addMember(company);
         return Response.valueOfObject(result);
     }
