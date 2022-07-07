@@ -3,9 +3,12 @@ package com.ranyikang.ssh.service;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
+import com.ranyikang.ssh.dao.CompanyDao;
+import com.ranyikang.ssh.entity.Company;
 import com.ranyikang.ssh.exception.BusinessException;
 import com.ranyikang.ssh.vo.FillInfoVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -27,6 +30,21 @@ import java.util.*;
 @Slf4j
 @Service
 public class CompanyService {
+
+    /**
+     * CompanyDao 数据库操作对象
+     */
+    private CompanyDao companyDao;
+
+    /**
+     * Company_member 数据表数据库操作对象 set 注入方法
+     *
+     * @param companyDao CompanyDao 对象
+     */
+    @Autowired
+    public void setCompanyDao(CompanyDao companyDao) {
+        this.companyDao = companyDao;
+    }
 
     private final List<String> names = Arrays.asList("韩佳", "刘建国", "牟继攀", "冉意康", "宋敏", "唐智林", "杨博坤");
     /**
@@ -85,7 +103,13 @@ public class CompanyService {
      */
     private static final int FIRST_SHEET_NO = 0;
 
-
+    /**
+     * 解析二维码检查 Excel
+     *
+     * @param file             excel 源文件, {@link MultipartFile} 对象
+     * @param specialTreatment 是否特殊操作
+     * @return 返回结果 List 集合
+     */
     public List<Map<String, Object>> parseExcel(MultipartFile file, boolean specialTreatment) {
         List<Map<String, Object>> result = new ArrayList<>();
         List<FillInfoVo> dataList = new ArrayList<>();
@@ -157,7 +181,14 @@ public class CompanyService {
         return result;
     }
 
-
+    /**
+     * 在职状态检查
+     *
+     * @param temp             用来存放检查结果 Map 集合
+     * @param specialTreatment 特殊处理标志
+     * @param value            周几值, 周一: 1; 周二: 2; 周三: 3; 周四: 4; 周五: 5; 周六: 6; 周天: 7;
+     * @param data             每行 excel 数据
+     */
     private void checkOnTheJobStatus(Map<String, Object> temp, boolean specialTreatment, int value, FillInfoVo data) {
 
         // 判断在岗状态, 周一到周五判断
@@ -212,6 +243,12 @@ public class CompanyService {
         }
     }
 
+    /**
+     * 解析二维码填报信息字符串
+     *
+     * @param code 未填报人员信息字符串
+     * @return 返回检查结果 List 集合
+     */
     public List<Map<String, Object>> parseCode(String code) {
         String info = code.substring(code.indexOf("：") + 1);
         String[] split = info.split(",");
@@ -229,5 +266,30 @@ public class CompanyService {
             }
         }
         return result;
+    }
+
+    /**
+     * 查询当前项目组所有人员信息
+     *
+     * @return 返回查询结果 List 集合
+     */
+    public List<Company> queryAll() {
+        return companyDao.findByOnTheJobIs(true);
+    }
+
+    /**
+     * 新增一个项目组成员
+     *
+     * @param company 项目组成员实体对象
+     * @return 返回新增后的项目组成员对象
+     */
+    public Company addMember(Company company) {
+        if (!StringUtils.hasText(company.getPosition())) {
+            company.setPosition("1");
+        }
+        if (!company.isOnTheJob()) {
+            company.setOnTheJob(true);
+        }
+        return companyDao.save(company);
     }
 }
