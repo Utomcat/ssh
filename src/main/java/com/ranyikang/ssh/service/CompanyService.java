@@ -46,7 +46,6 @@ public class CompanyService {
         this.companyDao = companyDao;
     }
 
-    private final List<String> names = Arrays.asList("韩佳", "刘建国", "牟继攀", "冉意康", "宋敏", "唐智林", "杨博坤");
     /**
      * 旅居史正常值
      */
@@ -132,6 +131,7 @@ public class CompanyService {
 
                 }
             }).sheet().doRead();
+            List<String> names = queryAllName();
             // 获取当天是周几
             int value = LocalDateTime.now().getDayOfWeek().getValue();
             // 打印获取的数据量
@@ -252,8 +252,8 @@ public class CompanyService {
     public List<Map<String, Object>> parseCode(String code) {
         String info = code.substring(code.indexOf("：") + 1);
         String[] split = info.split(",");
-
         List<Map<String, Object>> result = new ArrayList<>();
+        List<String> names = queryAllName();
         for (String s : split) {
             String[] s1 = s.split(" ");
             for (String s2 : s1) {
@@ -291,5 +291,14 @@ public class CompanyService {
             company.setOnTheJob(true);
         }
         return companyDao.save(company);
+    }
+
+    /**
+     * 查询所有在职状态的人员姓名
+     *
+     * @return 返回查询结果 List 集合
+     */
+    public List<String> queryAllName() {
+        return companyDao.findNameByOnTheJobIs(true);
     }
 }

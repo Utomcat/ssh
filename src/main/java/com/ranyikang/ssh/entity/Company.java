@@ -48,7 +48,7 @@ public class Company implements Serializable {
     /**
      * 组别
      */
-    @Column(name = "`group`")
+    @Column(name = "belong_group")
     private Integer group;
     /**
      * 职位: 1: 员工; 0: 项目经理; 2: 驻场经理; 3: 经理助理; 4: 技术总监; 5:小组组长; 默认为 1

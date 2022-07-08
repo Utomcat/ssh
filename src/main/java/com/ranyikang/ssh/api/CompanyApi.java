@@ -107,4 +107,14 @@ public class CompanyApi {
         return Response.valueOfObject(result);
     }
 
+    /**
+     * 查询所有人姓名
+     *
+     * @return 返回响应封装对象
+     */
+    @GetMapping("queryAllName")
+    public Response queryAllName() {
+        return Response.valueOfDate(companyService.queryAllName());
+    }
+
 }
