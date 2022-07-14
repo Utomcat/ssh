@@ -1,9 +1,9 @@
 package com.ranyikang.ssh.api;
 
+import com.ranyikang.ssh.common.Response;
 import com.ranyikang.ssh.service.PersonalService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * CLASS_NAME: PersonalApi.java <br/>
@@ -30,6 +30,12 @@ public class PersonalApi {
     @Autowired
     public void setPersonalService(PersonalService personalService) {
         this.personalService = personalService;
+    }
+
+
+    @PostMapping("calculate/total/interest")
+    public Response totalInterest(@RequestParam("totalSum") Integer totalSum, @RequestParam("proportion") String proportion){
+        return null;
     }
 
 
