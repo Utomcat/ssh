@@ -60,4 +60,10 @@ public class Company implements Serializable {
      */
     @Column(name = "on_the_job")
     private boolean onTheJob;
+
+    /**
+     * 住址
+     */
+    @Column(name = "address")
+    private String address;
 }

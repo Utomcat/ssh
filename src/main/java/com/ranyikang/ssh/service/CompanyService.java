@@ -8,6 +8,7 @@ import com.ranyikang.ssh.entity.Company;
 import com.ranyikang.ssh.exception.BusinessException;
 import com.ranyikang.ssh.vo.FillInfoVo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -132,6 +133,8 @@ public class CompanyService {
                 }
             }).sheet().doRead();
             List<String> names = queryAllName();
+            Map<String,String> addressMap = new HashedMap<>(names.size());
+            List<Company> companies = queryAll();
             // 获取当天是周几
             int value = LocalDateTime.now().getDayOfWeek().getValue();
             // 打印获取的数据量
@@ -170,8 +173,13 @@ public class CompanyService {
                     if (temp.size() > 0) {
                         result.add(temp);
                     }
+                    addressMap.put(data.getName(),data.getAddress());
                 }
             });
+
+            companies.forEach(company -> company.setAddress(addressMap.get(company.getName())));
+
+            companyDao.saveAll(companies);
 
         } catch (IOException e) {
             log.info("解析异常,异常信息为: {}", e.getMessage());
