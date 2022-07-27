@@ -44,4 +44,14 @@ public class TestApi {
         testService.testMethodZero();
         return Response.SUCCESS;
     }
+
+    /**
+     * 形实参数测试
+     *
+     * @return 返回响应结果封装对象
+     */
+    @GetMapping("formAndReal/param")
+    public Response testFormAndRealParam() {
+        return Response.valueOfObject(testService.testFormAndRealParam());
+    }
 }
