@@ -20,7 +20,10 @@ import java.util.List;
  * @date: 2022-07-07 <br/>
  */
 @Repository
-public interface CompanyDao extends CrudRepository<Company, Integer>, JpaRepository<Company, Integer>, PagingAndSortingRepository<Company, Integer>, JpaSpecificationExecutor<Company> {
+public interface CompanyDao extends CrudRepository<Company, Integer>,
+        JpaRepository<Company, Integer>,
+        PagingAndSortingRepository<Company, Integer>,
+        JpaSpecificationExecutor<Company> {
 
     /**
      * 查询当前在项目组的人员信息

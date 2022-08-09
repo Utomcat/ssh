@@ -11,12 +11,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -308,5 +314,23 @@ public class CompanyService {
      */
     public List<String> queryAllName() {
         return companyDao.findNameByOnTheJobIs(true);
+    }
+
+
+    public List<Company> queryAllOfMeetConditions(Company condition){
+
+        Specification<Company> queryCondition = (root, query, criteriaBuilder) -> {
+
+            // 查询条件 List
+            List<Predicate> predicateList = new ArrayList<>();
+            if (null != condition.getId()){
+                Predicate id = criteriaBuilder.equal(root.get("id").as(Integer.class), condition.getId());
+                predicateList.add(id);
+
+            }
+            criteriaBuilder.and(predicateList.toArray(new Predicate()[0]))
+            return null;
+        };
+        return null;
     }
 }
