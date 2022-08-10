@@ -117,4 +117,14 @@ public class CompanyApi {
         return Response.valueOfDate(companyService.queryAllName());
     }
 
+    /**
+     * 依据查询条件查询对应对象
+     *
+     * @param condition 查询条件封装对象
+     * @return 返回响应封装对象
+     */
+    @GetMapping("queryByCondition")
+    public Response queryByCondition(@RequestBody Company condition) {
+        return Response.valueOfObject(companyService.queryAllOfMeetConditions(condition));
+    }
 }

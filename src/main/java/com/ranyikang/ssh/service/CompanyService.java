@@ -16,13 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -139,7 +136,7 @@ public class CompanyService {
                 }
             }).sheet().doRead();
             List<String> names = queryAllName();
-            Map<String,String> addressMap = new HashedMap<>(names.size());
+            Map<String, String> addressMap = new HashedMap<>(names.size());
             List<Company> companies = queryAll();
             // 获取当天是周几
             int value = LocalDateTime.now().getDayOfWeek().getValue();
@@ -179,7 +176,7 @@ public class CompanyService {
                     if (temp.size() > 0) {
                         result.add(temp);
                     }
-                    addressMap.put(data.getName(),data.getAddress());
+                    addressMap.put(data.getName(), data.getAddress());
                 }
             });
 
@@ -316,21 +313,68 @@ public class CompanyService {
         return companyDao.findNameByOnTheJobIs(true);
     }
 
-
-    public List<Company> queryAllOfMeetConditions(Company condition){
+    /**
+     * 根据条件查询对应项目组人员信息
+     *
+     * @param condition 查询条件封装对象
+     * @return 返回查询结果 List 集合
+     */
+    public List<Company> queryAllOfMeetConditions(Company condition) {
 
         Specification<Company> queryCondition = (root, query, criteriaBuilder) -> {
 
             // 查询条件 List
             List<Predicate> predicateList = new ArrayList<>();
-            if (null != condition.getId()){
+            // id 不为空,增加查询条件 id
+            if (null != condition.getId()) {
                 Predicate id = criteriaBuilder.equal(root.get("id").as(Integer.class), condition.getId());
                 predicateList.add(id);
-
             }
-            criteriaBuilder.and(predicateList.toArray(new Predicate()[0]))
-            return null;
+            // name 不为空,增加查询条件 name
+            if (StringUtils.hasText(condition.getName())) {
+                Predicate name = criteriaBuilder.like(root.get("name").as(String.class), "%" + condition.getName() + "%");
+                predicateList.add(name);
+            }
+            // phone 不为空,增加查询条件 phone
+            if (StringUtils.hasText(condition.getPhone())) {
+                Predicate phone = criteriaBuilder.like(root.get("phone").as(String.class), "%" + condition.getPhone() + "%");
+                predicateList.add(phone);
+            }
+            // email 不为空,增加查询条件 email
+            if (StringUtils.hasText(condition.getEmail())) {
+                Predicate email = criteriaBuilder.like(root.get("email").as(String.class), "%" + condition.getEmail() + "%");
+                predicateList.add(email);
+            }
+            // group 不为空,增加查条件 group
+            if (null != condition.getGroup()) {
+                Predicate group = criteriaBuilder.equal(root.get("group").as(Integer.class), condition.getGroup());
+                predicateList.add(group);
+            }
+            // position 不为空,增加查询条件 position
+            if (StringUtils.hasText(condition.getPosition())) {
+                Predicate position = criteriaBuilder.like(root.get("position").as(String.class), "%" + condition.getPosition() + "%");
+                predicateList.add(position);
+            }
+            // onTheJob 不为空,增加查询条件 onTheJob
+            if (condition.isOnTheJob()) {
+                Predicate onTheJob = criteriaBuilder.equal(root.get("onTheJob").as(Boolean.class), condition.isOnTheJob() ? 1 : 0);
+                predicateList.add(onTheJob);
+            }
+            // address 不为空,增加查询条件 address
+            if (StringUtils.hasText(condition.getAddress())) {
+                Predicate address = criteriaBuilder.like(root.get("address").as(String.class), "%" + condition.getAddress() + "%");
+                predicateList.add(address);
+            }
+            // 将查询条件添加进 where 子句中
+            query.where(criteriaBuilder.and(predicateList.toArray(new Predicate[0])));
+            // 增加排序条件
+            List<Order> orderList = new ArrayList<>();
+            // 根据数据ID 降序排序
+            orderList.add(criteriaBuilder.desc(root.get("id")));
+            // 返回查询子句
+            return query.orderBy(orderList).getRestriction();
         };
-        return null;
+        // 执行查询返回查询结果
+        return companyDao.findAll(queryCondition);
     }
 }
