@@ -377,4 +377,24 @@ public class CompanyService {
         // 执行查询返回查询结果
         return companyDao.findAll(queryCondition);
     }
+
+    /**
+     * 更新公司成员在职状态
+     *
+     * @param company 需要更新公司成员在职状态的封装对象,其中仅存在 ID 值,以及需要修改的状态
+     */
+    public void updateMemberStatus(Company company) {
+        if (company.getId() == null || company.getId() <= 0) {
+            throw new BusinessException("传入的修改人员ID不正常,当前传入的ID为: " + company.getId());
+        }
+        Optional<Company> memberOptional = companyDao.findById(company.getId());
+        if (memberOptional.isPresent()){
+            Company member = memberOptional.get();
+            member.setOnTheJob(company.isOnTheJob());
+            companyDao.save(member);
+            log.info("执行更新人员完成");
+        }else {
+            throw new BusinessException("未查询到指定ID的成员,传入的人员ID为: "+ company.getId());
+        }
+    }
 }

@@ -127,4 +127,17 @@ public class CompanyApi {
     public Response queryByCondition(@RequestBody Company condition) {
         return Response.valueOfObject(companyService.queryAllOfMeetConditions(condition));
     }
+
+    /**
+     * 更新人员状态,通过传入的人员ID和需要修改的状态, true: 在职状态; false: 不在职状态;
+     *
+     * @param company 需要修改人员封装对象
+     * @return 反正修改结果响应封装对象
+     */
+    @PostMapping("updateMemberStatus")
+    public Response updateMemberStatus(@RequestBody Company company) {
+        companyService.updateMemberStatus(company);
+        return Response.valueOfMsg("更新成功");
+    }
+
 }
