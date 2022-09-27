@@ -4,6 +4,7 @@ import com.ranyikang.ssh.common.Response;
 import com.ranyikang.ssh.entity.Company;
 import com.ranyikang.ssh.exception.BusinessException;
 import com.ranyikang.ssh.service.CompanyService;
+import com.ranyikang.ssh.vo.CompanyVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -140,4 +141,14 @@ public class CompanyApi {
         return Response.valueOfMsg("更新成功");
     }
 
+    /**
+     * 按条件分页查询公司人员信息
+     *
+     * @param company 分页查询条件封装对象
+     * @return 返回响应封装对象
+     */
+    @PostMapping("queryAllMember")
+    public Response queryAllMember(@RequestBody CompanyVO company) {
+        return Response.builder().object(companyService.queryAll(company)).build();
+    }
 }

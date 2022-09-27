@@ -37,13 +37,13 @@ public class ApiAop {
         // 满足自定义异常捕获
         catch (BusinessException busException) {
             log.info("----自定义业务异常处理----");
-            return Response.valueOfMsg(busException.getMessage());
+            return Response.builder().code(406).message(busException.getMessage()).build();
         }
         // 其他异常捕获
         catch (Throwable e) {
             log.error("----其他异常----");
             log.error("本次异常信息为: {}", e.getMessage());
-            return Response.valueOfMsg("系统发生异常,请联系管理员");
+            return Response.builder().code(407).message("系统发生异常,请联系管理员").build();
         }
     }
 

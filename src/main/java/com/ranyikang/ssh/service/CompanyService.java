@@ -6,18 +6,20 @@ import com.alibaba.excel.event.AnalysisEventListener;
 import com.ranyikang.ssh.dao.CompanyDao;
 import com.ranyikang.ssh.entity.Company;
 import com.ranyikang.ssh.exception.BusinessException;
+import com.ranyikang.ssh.util.pageable.PageableVO;
+import com.ranyikang.ssh.vo.CompanyVO;
 import com.ranyikang.ssh.vo.FillInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
@@ -325,46 +327,7 @@ public class CompanyService {
 
             // 查询条件 List
             List<Predicate> predicateList = new ArrayList<>();
-            // id 不为空,增加查询条件 id
-            if (null != condition.getId()) {
-                Predicate id = criteriaBuilder.equal(root.get("id").as(Integer.class), condition.getId());
-                predicateList.add(id);
-            }
-            // name 不为空,增加查询条件 name
-            if (StringUtils.hasText(condition.getName())) {
-                Predicate name = criteriaBuilder.like(root.get("name").as(String.class), "%" + condition.getName() + "%");
-                predicateList.add(name);
-            }
-            // phone 不为空,增加查询条件 phone
-            if (StringUtils.hasText(condition.getPhone())) {
-                Predicate phone = criteriaBuilder.like(root.get("phone").as(String.class), "%" + condition.getPhone() + "%");
-                predicateList.add(phone);
-            }
-            // email 不为空,增加查询条件 email
-            if (StringUtils.hasText(condition.getEmail())) {
-                Predicate email = criteriaBuilder.like(root.get("email").as(String.class), "%" + condition.getEmail() + "%");
-                predicateList.add(email);
-            }
-            // group 不为空,增加查条件 group
-            if (null != condition.getGroup()) {
-                Predicate group = criteriaBuilder.equal(root.get("group").as(Integer.class), condition.getGroup());
-                predicateList.add(group);
-            }
-            // position 不为空,增加查询条件 position
-            if (StringUtils.hasText(condition.getPosition())) {
-                Predicate position = criteriaBuilder.like(root.get("position").as(String.class), "%" + condition.getPosition() + "%");
-                predicateList.add(position);
-            }
-            // onTheJob 不为空,增加查询条件 onTheJob
-            if (condition.isOnTheJob()) {
-                Predicate onTheJob = criteriaBuilder.equal(root.get("onTheJob").as(Boolean.class), condition.isOnTheJob() ? 1 : 0);
-                predicateList.add(onTheJob);
-            }
-            // address 不为空,增加查询条件 address
-            if (StringUtils.hasText(condition.getAddress())) {
-                Predicate address = criteriaBuilder.like(root.get("address").as(String.class), "%" + condition.getAddress() + "%");
-                predicateList.add(address);
-            }
+            addCondition(predicateList, condition, criteriaBuilder, root);
             // 将查询条件添加进 where 子句中
             query.where(criteriaBuilder.and(predicateList.toArray(new Predicate[0])));
             // 增加排序条件
@@ -379,6 +342,57 @@ public class CompanyService {
     }
 
     /**
+     * 添加条件
+     *
+     * @param predicateList   查询条件 List 集合
+     * @param condition       传入的查询条件对象
+     * @param criteriaBuilder 条件对象构造对象
+     * @param root            根对象
+     */
+    private void addCondition(List<Predicate> predicateList, Company condition, CriteriaBuilder criteriaBuilder, Root<Company> root) {
+        // id 不为空,增加查询条件 id
+        if (null != condition.getId()) {
+            Predicate id = criteriaBuilder.equal(root.get("id").as(Integer.class), condition.getId());
+            predicateList.add(id);
+        }
+        // name 不为空,增加查询条件 name
+        if (StringUtils.hasText(condition.getName())) {
+            Predicate name = criteriaBuilder.like(root.get("name").as(String.class), "%" + condition.getName() + "%");
+            predicateList.add(name);
+        }
+        // phone 不为空,增加查询条件 phone
+        if (StringUtils.hasText(condition.getPhone())) {
+            Predicate phone = criteriaBuilder.like(root.get("phone").as(String.class), "%" + condition.getPhone() + "%");
+            predicateList.add(phone);
+        }
+        // email 不为空,增加查询条件 email
+        if (StringUtils.hasText(condition.getEmail())) {
+            Predicate email = criteriaBuilder.like(root.get("email").as(String.class), "%" + condition.getEmail() + "%");
+            predicateList.add(email);
+        }
+        // group 不为空,增加查条件 group
+        if (null != condition.getGroup()) {
+            Predicate group = criteriaBuilder.equal(root.get("group").as(Integer.class), condition.getGroup());
+            predicateList.add(group);
+        }
+        // position 不为空,增加查询条件 position
+        if (StringUtils.hasText(condition.getPosition())) {
+            Predicate position = criteriaBuilder.like(root.get("position").as(String.class), "%" + condition.getPosition() + "%");
+            predicateList.add(position);
+        }
+        // onTheJob 不为空,增加查询条件 onTheJob
+        if (condition.isOnTheJob()) {
+            Predicate onTheJob = criteriaBuilder.equal(root.get("onTheJob").as(Boolean.class), condition.isOnTheJob() ? 1 : 0);
+            predicateList.add(onTheJob);
+        }
+        // address 不为空,增加查询条件 address
+        if (StringUtils.hasText(condition.getAddress())) {
+            Predicate address = criteriaBuilder.like(root.get("address").as(String.class), "%" + condition.getAddress() + "%");
+            predicateList.add(address);
+        }
+    }
+
+    /**
      * 更新公司成员在职状态
      *
      * @param company 需要更新公司成员在职状态的封装对象,其中仅存在 ID 值,以及需要修改的状态
@@ -388,13 +402,42 @@ public class CompanyService {
             throw new BusinessException("传入的修改人员ID不正常,当前传入的ID为: " + company.getId());
         }
         Optional<Company> memberOptional = companyDao.findById(company.getId());
-        if (memberOptional.isPresent()){
+        if (memberOptional.isPresent()) {
             Company member = memberOptional.get();
             member.setOnTheJob(company.isOnTheJob());
             companyDao.save(member);
             log.info("执行更新人员完成");
-        }else {
-            throw new BusinessException("未查询到指定ID的成员,传入的人员ID为: "+ company.getId());
+        } else {
+            throw new BusinessException("未查询到指定ID的成员,传入的人员ID为: " + company.getId());
         }
+    }
+
+    /**
+     * 按条件分页查询公司全部人员信息
+     *
+     * @param company 查询条件分页封装对象
+     * @return 返回查询结果 Map&lt;String,Object&gt; 集合 ,<br/>
+     * 结果中包含: <br/>
+     * 1. tableData: 存放查询结果 List 集合; <br/>
+     * 2. tableTotal: 存放满足查询条件的数据条数; <br/>
+     * 3. pageSize: 存放每页查询数量;<br/>
+     * 4. currentPage: 存放当前页数;<br/>
+     * 5. totalPage: 存放总页数;
+     */
+    public Map<String, Object> queryAll(CompanyVO company) {
+        Page<Company> companies = companyDao.findAll((Specification<Company>) (root, query, criteriaBuilder) -> {
+            // 查询条件 List
+            List<Predicate> predicateList = new ArrayList<>();
+            addCondition(predicateList, company.getCompany(), criteriaBuilder, root);
+            query.where(criteriaBuilder.and(predicateList.toArray(new Predicate[0])));
+            return null;
+        }, company.getPageable());
+        Map<String, Object> result = new HashedMap<>(6);
+        result.put("tableData", companies.getContent());
+        result.put("tableTotal", companies.getTotalElements());
+        result.put("pageSize", companies.getSize());
+        result.put("currentPage", companies.getNumber() + 1);
+        result.put("totalPage", companies.getTotalPages());
+        return result;
     }
 }
