@@ -109,6 +109,18 @@ public class CompanyApi {
     }
 
     /**
+     * 更新人员信息
+     *
+     * @param company 需要更新的人员信息封装实体对象
+     * @return 返回响应封装对象
+     */
+    @PostMapping("update")
+    public Response updateMember(@RequestBody Company company){
+        Company result = companyService.updateMember(company);
+        return Response.valueOfObject(result);
+    }
+
+    /**
      * 查询所有人姓名
      *
      * @return 返回响应封装对象

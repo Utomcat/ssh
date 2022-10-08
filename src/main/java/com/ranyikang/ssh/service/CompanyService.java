@@ -380,10 +380,8 @@ public class CompanyService {
             predicateList.add(position);
         }
         // onTheJob 不为空,增加查询条件 onTheJob
-        if (condition.isOnTheJob()) {
-            Predicate onTheJob = criteriaBuilder.equal(root.get("onTheJob").as(Boolean.class), condition.isOnTheJob() ? 1 : 0);
-            predicateList.add(onTheJob);
-        }
+        Predicate onTheJob = criteriaBuilder.equal(root.get("onTheJob").as(Boolean.class), condition.isOnTheJob() ? 1 : 0);
+        predicateList.add(onTheJob);
         // address 不为空,增加查询条件 address
         if (StringUtils.hasText(condition.getAddress())) {
             Predicate address = criteriaBuilder.like(root.get("address").as(String.class), "%" + condition.getAddress() + "%");
@@ -438,5 +436,35 @@ public class CompanyService {
         result.put("currentPage", companies.getNumber() + 1);
         result.put("totalPage", companies.getTotalPages());
         return result;
+    }
+
+    /**
+     * 更新人员信息
+     *
+     * @param company 传入的需要更新的人员信息封装实体对象
+     * @return 返回更新后的实体对象
+     */
+    public Company updateMember(Company company) {
+        // 更新前判断需要更新的人员信息 ID 是否存在
+        if (company.getId() == null || company.getId() <= 0){
+            throw new BusinessException("传入的人员ID不正确,请排查传入信息!");
+        }
+        // 更新前判断需要更新的人员信息 name 是否存在
+        if (!StringUtils.hasText(company.getName())){
+            throw new BusinessException("传入的人员姓名不存在!");
+        }
+        // 更新前判断需要更新的人员信息 phone 是否存在
+        if (!StringUtils.hasText(company.getPhone())){
+            throw new BusinessException("传入的人员电话不存在!");
+        }
+        // 更新前判断需要更新的人员信息 email 是否存在,不存在则设置为 1
+        if (!StringUtils.hasText(company.getEmail())){
+            company.setEmail("1");
+        }
+        // 更新前判断需要更新的人员信息 position 是否存在,不存在则设置为 1
+        if (!StringUtils.hasText(company.getPosition())){
+            company.setPosition("1");
+        }
+        return companyDao.save(company);
     }
 }
