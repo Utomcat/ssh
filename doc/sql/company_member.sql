@@ -7,7 +7,8 @@ create table company_member
     email      varchar(60) not null comment '公司邮箱',
     belong_group    int         null comment '所属组别',
     position   varchar(20) not null default '1' comment '职位: 1: 员工; 0: 项目经理; 2:驻场经理; 3:经理助手; 4:技术总监; 5:小组组长; 默认: 1(员工)',
-    on_the_job boolean     not null default true comment '在职状态: true: 在职; false: 不在职; 默认: true(在职)'
+    on_the_job boolean     not null default true comment '在职状态: true: 在职; false: 不在职; 默认: true(在职)',
+    address varchar(500) null comment  '居住地址'
 ) engine = InnoDB
   Default charset = utf8 comment '公司人员信息表';
 
