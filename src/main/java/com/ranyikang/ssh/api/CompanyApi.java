@@ -5,6 +5,7 @@ import com.ranyikang.ssh.entity.Company;
 import com.ranyikang.ssh.exception.BusinessException;
 import com.ranyikang.ssh.service.CompanyService;
 import com.ranyikang.ssh.vo.CompanyVO;
+import com.ranyikang.ssh.vo.QrCodeVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -70,19 +71,19 @@ public class CompanyApi {
     /**
      * 上午二位码填报信息请求处理
      *
-     * @param code 信息字符串
+     * @param qrCode 二维码未填写信息封装对象
      * @return 返回 Response 响应封装对象
      */
     @PostMapping("qrCode")
-    public Response qrCode(@RequestParam("code") String code) {
-        if (!StringUtils.hasText(code)) {
+    public Response qrCode(@RequestBody QrCodeVO qrCode) {
+        if (!StringUtils.hasText(qrCode.getCode())) {
             throw new BusinessException("未录入未填报二维码人员信息!");
         }
-        List<Map<String, Object>> maps = companyService.parseCode(code);
+        List<Map<String, Object>> maps = companyService.parseCode(qrCode.getCode());
         if (maps.size() > 0) {
             return Response.valueOfObject(maps);
         } else {
-            return Response.valueOfObject("没有未填报二维码人员");
+            return Response.valueOfMsg("没有未填报二维码人员");
         }
     }
 

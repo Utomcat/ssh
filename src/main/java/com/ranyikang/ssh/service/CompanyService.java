@@ -18,8 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.criteria.*;
-import java.io.IOException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -115,16 +117,93 @@ public class CompanyService {
      * @return 返回结果 List 集合
      */
     public List<Map<String, Object>> parseExcel(MultipartFile file, boolean specialTreatment) {
+        // 解析的返回结果 List 集合
         List<Map<String, Object>> result = new ArrayList<>();
+        // 获取 excel 表格中的数据 List 集合
         List<FillInfoVo> dataList = new ArrayList<>();
+        // 解析 Excel 数据表格,同时将解析后的数据放进 dataList 中
+        getExcelData(dataList, file);
+        // 获取全公司的人员姓名
+        List<String> names = queryAllName();
+        // 定义并初始化用来存放地址的 Map 集合,其中 key 为 姓名, value 为对应人员的住址
+        Map<String, String> addressMap = new HashedMap<>(names.size());
+        // 获取全公司人员信息
+        List<Company> companies = queryAll();
+        // 打印获取的数据量
+        log.info("本次读取的数据长度为: {}", dataList.size());
+        // 做数据检查,同时获取最新的住址,将其添加进住址 Map 中
+        doCheck(dataList,addressMap,names, result, specialTreatment);
+        // 更新当前人员信息的地址
+        companies.forEach(company -> company.setAddress(addressMap.get(company.getName())));
+        // 执行更新地址操作
+        companyDao.saveAll(companies);
+        // 返回响应结果
+        return result;
+    }
+
+    private void doCheck(List<FillInfoVo> dataList, Map<String, String> addressMap, List<String> names, List<Map<String, Object>> result, boolean specialTreatment) {
+        // 获取当天是周几
+        int value = LocalDateTime.now().getDayOfWeek().getValue();
+        // 遍历查询结果, 判断指定人员的填报内容中是否有误
+        dataList.forEach(data -> {
+            Map<String, Object> temp = new HashMap<>(1);
+            // 当当前遍历数据在指定的数组中,进行填报信息判断
+            if (names.contains(data.getName())) {
+                // 判断旅居史
+                if (!sojournHistory.equals(data.getSojournHistory())) {
+                    log.error("{}  旅居史填报有异常!", data.getName());
+                    temp.put(data.getName(), "旅居史填报有异常");
+                }
+                // 判断健康状态
+                if (!healthCondition.equals(data.getHealthCondition())) {
+                    log.error("{} 健康情况填报有异常!", data.getName());
+                    temp.put(data.getName(), "健康情况填报有异常");
+                }
+                // 判断体温
+                if (Double.parseDouble(data.getBodyTemperature()) < MIN_BODY_TEMPERATURE || Double.parseDouble(data.getBodyTemperature()) > MAX_BODY_TEMPERATURE) {
+                    log.error("{} 体温填报有异常!", data.getName());
+                    temp.put(data.getName(), "体温填报有异常");
+                }
+                // 判断绿码
+                if (!greenCode.equals(data.getGreenCode())) {
+                    log.error("{} 绿码填报有异常!", data.getName());
+                    temp.put(data.getName(), "绿码填报有异常");
+                }
+                // 判断接种情况
+                if (!vaccineSituation.equals(data.getVaccineSituation())) {
+                    log.error("{} 接种情况填报有异常!", data.getName());
+                    temp.put(data.getName(), "接种情况填报有异常");
+                }
+                checkOnTheJobStatus(temp, specialTreatment, value, data);
+                if (temp.size() > 0) {
+                    result.add(temp);
+                }
+                addressMap.put(data.getName(), data.getAddress());
+            }
+        });
+    }
+
+    /**
+     * 获取传入的 Excel 数据
+     *
+     * @param dataList 用来存放 Excel 每一行数据的 List 集合
+     * @param file     传入的 Excel 文件对象
+     */
+    private void getExcelData(List<FillInfoVo> dataList, MultipartFile file) {
         try {
+            // 获取文件输入流
             InputStream inputStream = file.getInputStream();
+            // 读取文件流中的内容
             EasyExcel.read(inputStream, FillInfoVo.class, new AnalysisEventListener<FillInfoVo>() {
                 @Override
                 public void invoke(FillInfoVo data, AnalysisContext context) {
+                    // 获取工作薄编号
                     int sheetNo = context.readSheetHolder().getSheetNo();
+                    // 当工作簿是指定的工作薄则获取数据
                     if (sheetNo == FIRST_SHEET_NO) {
+                        // 获取行索引
                         int index = context.readRowHolder().getRowIndex();
+                        // 当指定行数为指定的数据时,将当前数据对象添加进 dataList 集合中
                         if (index >= startIndex) {
                             dataList.add(data);
                         }
@@ -136,61 +215,10 @@ public class CompanyService {
 
                 }
             }).sheet().doRead();
-            List<String> names = queryAllName();
-            Map<String, String> addressMap = new HashedMap<>(names.size());
-            List<Company> companies = queryAll();
-            // 获取当天是周几
-            int value = LocalDateTime.now().getDayOfWeek().getValue();
-            // 打印获取的数据量
-            log.info("本次读取的数据长度为: {}", dataList.size());
-            // 遍历查询结果, 判断指定人员的填报内容中是否有误
-            dataList.forEach(data -> {
-                Map<String, Object> temp = new HashMap<>(1);
-                // 当当前遍历数据在指定的数组中,进行填报信息判断
-                if (names.contains(data.getName())) {
-                    // 判断旅居史
-                    if (!sojournHistory.equals(data.getSojournHistory())) {
-                        log.error("{}  旅居史填报有异常!", data.getName());
-                        temp.put(data.getName(), "旅居史填报有异常");
-                    }
-                    // 判断健康状态
-                    if (!healthCondition.equals(data.getHealthCondition())) {
-                        log.error("{} 健康情况填报有异常!", data.getName());
-                        temp.put(data.getName(), "健康情况填报有异常");
-                    }
-                    // 判断体温
-                    if (Double.parseDouble(data.getBodyTemperature()) < MIN_BODY_TEMPERATURE || Double.parseDouble(data.getBodyTemperature()) > MAX_BODY_TEMPERATURE) {
-                        log.error("{} 体温填报有异常!", data.getName());
-                        temp.put(data.getName(), "体温填报有异常");
-                    }
-                    // 判断绿码
-                    if (!greenCode.equals(data.getGreenCode())) {
-                        log.error("{} 绿码填报有异常!", data.getName());
-                        temp.put(data.getName(), "绿码填报有异常");
-                    }
-                    // 判断接种情况
-                    if (!vaccineSituation.equals(data.getVaccineSituation())) {
-                        log.error("{} 接种情况填报有异常!", data.getName());
-                        temp.put(data.getName(), "接种情况填报有异常");
-                    }
-                    checkOnTheJobStatus(temp, specialTreatment, value, data);
-                    if (temp.size() > 0) {
-                        result.add(temp);
-                    }
-                    addressMap.put(data.getName(), data.getAddress());
-                }
-            });
-
-            companies.forEach(company -> company.setAddress(addressMap.get(company.getName())));
-
-            companyDao.saveAll(companies);
-
-        } catch (IOException e) {
-            log.info("解析异常,异常信息为: {}", e.getMessage());
-            throw new BusinessException("解析Excel数据异常!");
+        } catch (Exception e) {
+            log.error("获取 Excel 数据时发生异常!");
+            throw new BusinessException("获取 Excel 数据发生错误,请检查 Excel 数据或获取 Excel 的配置!");
         }
-
-        return result;
     }
 
     /**
@@ -272,7 +300,7 @@ public class CompanyService {
                 if (names.contains(s2)) {
                     Map<String, Object> temp = new HashMap<>(1);
                     log.info("{} 二维码未填写", s);
-                    temp.put(s, "二维码未填写");
+                    temp.put("name", s);
                     result.add(temp);
                 }
             }
@@ -446,23 +474,23 @@ public class CompanyService {
      */
     public Company updateMember(Company company) {
         // 更新前判断需要更新的人员信息 ID 是否存在
-        if (company.getId() == null || company.getId() <= 0){
+        if (company.getId() == null || company.getId() <= 0) {
             throw new BusinessException("传入的人员ID不正确,请排查传入信息!");
         }
         // 更新前判断需要更新的人员信息 name 是否存在
-        if (!StringUtils.hasText(company.getName())){
+        if (!StringUtils.hasText(company.getName())) {
             throw new BusinessException("传入的人员姓名不存在!");
         }
         // 更新前判断需要更新的人员信息 phone 是否存在
-        if (!StringUtils.hasText(company.getPhone())){
+        if (!StringUtils.hasText(company.getPhone())) {
             throw new BusinessException("传入的人员电话不存在!");
         }
         // 更新前判断需要更新的人员信息 email 是否存在,不存在则设置为 1
-        if (!StringUtils.hasText(company.getEmail())){
+        if (!StringUtils.hasText(company.getEmail())) {
             company.setEmail("1");
         }
         // 更新前判断需要更新的人员信息 position 是否存在,不存在则设置为 1
-        if (!StringUtils.hasText(company.getPosition())){
+        if (!StringUtils.hasText(company.getPosition())) {
             company.setPosition("1");
         }
         return companyDao.save(company);
