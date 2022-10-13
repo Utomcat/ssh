@@ -495,4 +495,14 @@ class SshApplicationTests {
 
 
     }
+
+    /**
+     * BigDecimal 类型 减法测试;
+     */
+    @Test
+    void test19(){
+        BigDecimal a = BigDecimal.ZERO;
+        BigDecimal b = new BigDecimal("1");
+        log.info("a-b = {}", a.subtract(b));
+    }
 }
