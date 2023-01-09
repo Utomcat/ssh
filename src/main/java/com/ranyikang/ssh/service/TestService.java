@@ -1,6 +1,8 @@
 package com.ranyikang.ssh.service;
 
+import com.ranyikang.ssh.entity.Student;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -35,6 +37,16 @@ public class TestService {
     private static final int INITIAL_CAPACITY = 16;
 
     /**
+     * 学生业务类
+     */
+    private StudentService studentService;
+
+    @Autowired
+    public void setStudentService(StudentService studentService) {
+        this.studentService = studentService;
+    }
+
+    /**
      * 测试方法0,用来测试全局变量
      */
     public void testMethodZero() {
@@ -59,6 +71,12 @@ public class TestService {
         map.put("result 地址",System.identityHashCode(result));
         return map;
     }
+
+    public Object testJpaOneToMany(){
+
+        return studentService.testJpaOneToMany();
+    }
+
 
     /**
      * 处理 List 集合

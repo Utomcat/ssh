@@ -54,4 +54,11 @@ public class TestApi {
     public Response testFormAndRealParam() {
         return Response.valueOfObject(testService.testFormAndRealParam());
     }
+
+
+
+    @GetMapping("testJpaOntToMany")
+    public Response testJpaOntToMany(){
+        return Response.valueOfObject(testService.testJpaOneToMany());
+    }
 }
