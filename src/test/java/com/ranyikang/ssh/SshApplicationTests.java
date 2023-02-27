@@ -6,11 +6,13 @@ import com.ranyikang.ssh.service.EchartsServiceImpl;
 import com.ranyikang.ssh.util.ArrayUtils;
 import com.ranyikang.ssh.util.DataBaseUtils;
 import com.ranyikang.ssh.util.EasyExcelUtils;
+import com.ranyikang.ssh.util.JdomUtils;
 import com.ranyikang.ssh.vo.DemoData;
 import com.ranyikang.ssh.vo.FcInterDtlSubVo;
 import com.ranyikang.ssh.vo.FcInterDtlVo;
 import com.ranyikang.ssh.vo.FillInfoVo;
 import lombok.extern.slf4j.Slf4j;
+import org.jdom2.JDOMException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -500,9 +502,34 @@ class SshApplicationTests {
      * BigDecimal 类型 减法测试;
      */
     @Test
-    void test19(){
+    void test19() {
         BigDecimal a = BigDecimal.ZERO;
         BigDecimal b = new BigDecimal("1");
         log.info("a-b = {}", a.subtract(b));
     }
+
+    /**
+     * JDOM xml 文件处理工具类测试,获取xml 文件, 设置节点值,获取xml文件内容测试
+     */
+    @Test
+    void test20() {
+        String xmlFileName = "001004.xml";
+        String xmlPath = this.getClass().getClassLoader().getResource(xmlFileName).getPath();
+        File xmlFile = new File(xmlPath);
+        try {
+            JdomUtils jdomUtils = new JdomUtils(xmlFile);
+            jdomUtils.setNodeText("/BCDL/CST_FLOW", "aaaaaa");
+            String docText = jdomUtils.getDocText().replace(" ", "").replace("\r", "").replace("\n", "");
+            log.info("节点值为 ==> {}", docText);
+        } catch (JDOMException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
 }
