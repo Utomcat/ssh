@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -530,6 +531,33 @@ class SshApplicationTests {
         }
 
 
+    }
+
+    /**
+     * DecimalFormat 格式化数字,并将其转换为字符串方法测试,测试结果:
+     * - 2023-03-01 测试结果:
+     *      格式字符串中小数点后有多少个0 则表示需要保留几位小数,多余位数四舍五入,不够位数用0 补位
+     *      格式字符串中小数点前的内容表示 按某种格式用指定的记号分割,如 #,###.00 代表小数点前没三位用 , 分割一下,记号前不用和分割位数一样,用一个也可
+     *
+     */
+    @Test
+    void test21(){
+        BigDecimal decimal0 = new BigDecimal(1000000000000000000L);
+        BigDecimal decimal1 = BigDecimal.valueOf(12.0457);
+        BigDecimal decimal2 = BigDecimal.valueOf(12.0457899098);
+        BigDecimal decimal3 = BigDecimal.valueOf(12.0457894098);
+        //DecimalFormat format = new DecimalFormat("###.00");
+        //DecimalFormat format = new DecimalFormat("###,###.00");
+        //DecimalFormat format = new DecimalFormat("#,###.00");
+        DecimalFormat format = new DecimalFormat("#,###.000000");
+        String number0 = format.format(decimal0);
+        String number1 = format.format(decimal1);
+        String number2 = format.format(decimal2);
+        String number3 = format.format(decimal3);
+        log.info("原数字值为: {} ,格式化后值为: {}", decimal0, number0);
+        log.info("原数字值为: {} ,格式化后值为: {}", decimal1, number1);
+        log.info("原数字值为: {} ,格式化后值为: {}", decimal2, number2);
+        log.info("原数字值为: {} ,格式化后值为: {}", decimal3, number3);
     }
 
 }
