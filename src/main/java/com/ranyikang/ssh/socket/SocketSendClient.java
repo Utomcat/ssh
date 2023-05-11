@@ -37,9 +37,7 @@ public class SocketSendClient extends Thread {
                 writer.println("Send From Client");
                 writer.flush();
                 StringBuilder getData = new StringBuilder();
-                while (reader.readLine() != null) {
-                    getData.append(reader.readLine());
-                }
+                getData.append(reader.readLine());
                 log.info("客户端接收到的信息: {}", getData);
                 writer.close();
                 reader.close();
@@ -51,6 +49,8 @@ public class SocketSendClient extends Thread {
     }
 
     public static void main(String[] args) {
-        new SocketSendClient("127.0.0.1", 8765).start();
+        for (int i = 0; i < 10; i++) {
+            new Thread(new SocketSendClient("127.0.0.1", 8765),"thread"+i).start();
+        }
     }
 }

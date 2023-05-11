@@ -32,29 +32,35 @@ public class SocketService extends Thread {
 
     @Override
     public void run() {
-        try {
-            log.info("Socket 服务端进程启动,等待连线!");
-            socket = server.accept();
-            log.info("连线成功,获取连线: InetAddress ==> {} ", socket.getInetAddress());
-            // 获得连线且无需在接收其他连线,则可关闭 ServerSocket
-            server.close();
-            PrintStream writer;
-            BufferedReader reader;
-            writer = new PrintStream(socket.getOutputStream());
-            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            StringBuilder getData = new StringBuilder();
-            getData.append(reader.readLine());
-            log.info("获取到的数据为 {}", getData);
-            writer.println(getResponseData());
-            writer.flush();
-            reader.close();
-            writer.close();
-            socket.close();
-        } catch (IOException e) {
-            log.error("Socket 连线存在异常,异常信息为 {}, 异常类为 {}, 异常行数为 {}", e.getMessage(), e.getStackTrace()[0].getClassName(), e.getStackTrace()[0].getLineNumber());
-            log.error("异常为: {}", e.toString());
+        int i = 0;
+        while (true){
+            try {
+                log.info("Socket 服务端进程启动,等待连线!");
+                socket = server.accept();
+                log.info("连线成功,获取连线: InetAddress ==> {} ", socket.getInetAddress());
+                // 获得连线且无需在接收其他连线,则可关闭 ServerSocket
+                server.close();
+                PrintStream writer;
+                BufferedReader reader;
+                writer = new PrintStream(socket.getOutputStream());
+                reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                StringBuilder getData = new StringBuilder();
+                getData.append(reader.readLine());
+                log.info("获取到的数据为 {}", getData);
+                writer.println(getResponseData());
+                writer.flush();
+                reader.close();
+                writer.close();
+                socket.close();
+            } catch (IOException e) {
+                log.error("Socket 连线存在异常,异常信息为 {}, 异常类为 {}, 异常行数为 {}", e.getMessage(), e.getStackTrace()[0].getClassName(), e.getStackTrace()[0].getLineNumber());
+                log.error("异常为: {}", e.toString());
+            }
+            i++;
+            if (i>= 10){
+                break;
+            }
         }
-
     }
 
 

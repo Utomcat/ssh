@@ -1,11 +1,10 @@
 package com.ranyikang.ssh.api;
 
 import com.ranyikang.ssh.common.Response;
+import com.ranyikang.ssh.entity.Student;
 import com.ranyikang.ssh.service.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * CLASS_NAME: TestApi.java <br/>
@@ -61,4 +60,11 @@ public class TestApi {
     public Response testJpaOntToMany(){
         return Response.valueOfObject(testService.testJpaOneToMany());
     }
+
+
+    @PostMapping("save")
+    public Response save(@RequestBody Student student) {
+        return Response.valueOfObject(testService.testSave(student));
+    }
+
 }

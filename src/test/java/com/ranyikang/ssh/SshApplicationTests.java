@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.util.StringUtils;
 import redis.clients.jedis.Jedis;
 
@@ -62,6 +63,11 @@ class SshApplicationTests {
      */
     @Value("${redis.database}")
     private String redisDatabase;
+    /**
+     * redis 字符串操作 Template 对象
+     */
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
 
     /**
@@ -592,4 +598,13 @@ class SshApplicationTests {
         log.info("操作 redis 数据库的结果为: {} , {}", result, setexResult);
         jedis.close();
     }
+
+    @Test
+    void test23(){
+        stringRedisTemplate.opsForValue().set("name","李四");
+        String s = stringRedisTemplate.opsForValue().get("name");
+        log.info("redis 存放的 key 为 name 的值为 {} ", s);
+
+    }
+
 }

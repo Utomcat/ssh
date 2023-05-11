@@ -1,8 +1,12 @@
 package com.ranyikang.ssh.service;
 
+import com.alibaba.fastjson2.JSON;
 import com.ranyikang.ssh.entity.Student;
+import com.ranyikang.ssh.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -10,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * CLASS_NAME: TestService.java <br/>
@@ -41,9 +46,16 @@ public class TestService {
      */
     private StudentService studentService;
 
+    private RedisTemplate<String, String> redisTemplate;
+
     @Autowired
     public void setStudentService(StudentService studentService) {
         this.studentService = studentService;
+    }
+
+    @Autowired
+    public void setRedisTemplate(StringRedisTemplate redisTemplate) {
+        this.redisTemplate = redisTemplate;
     }
 
     /**
@@ -66,15 +78,33 @@ public class TestService {
         List<String> result = listHandle(list);
         Map<String, Object> map = new HashMap<>(4);
         map.put("list", list);
-        map.put("list 地址",System.identityHashCode(list));
+        map.put("list 地址", System.identityHashCode(list));
         map.put("result", result);
-        map.put("result 地址",System.identityHashCode(result));
+        map.put("result 地址", System.identityHashCode(result));
         return map;
     }
 
-    public Object testJpaOneToMany(){
+    public Object testJpaOneToMany() {
 
         return studentService.testJpaOneToMany();
+    }
+
+    public int testSave(Student student) {
+        Student redisCacheStudent = JSON.parseObject(redisTemplate.opsForValue().get(student.getName()), Student.class);
+        if (redisCacheStudent != null && redisCacheStudent.getName().equals(student.getName())) {
+            throw new BusinessException("当前正在保存提交的用户,请等待保存后再进行操作!");
+        } else {
+            redisTemplate.opsForValue().set(student.getName(), JSON.toJSONString(student), 120, TimeUnit.SECONDS);
+            int saveResult = studentService.saveStudent(student);
+            Boolean delete = redisTemplate.delete(student.getName());
+            if (Boolean.TRUE.equals(delete)) {
+                log.info("移除 redis 中的缓存 key 成功,删除结果为 {}", true);
+                return saveResult;
+            } else {
+                throw new BusinessException("移除 redis 中的缓存 key 失败,请重新尝试保存");
+            }
+
+        }
     }
 
 

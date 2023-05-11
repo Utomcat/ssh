@@ -32,4 +32,14 @@ public class StudentService {
         return studentDao.testJpaOneToMany();
     }
 
+    public  int  saveStudent(Student student){
+        Student saveStudent = studentDao.save(student);
+        if (saveStudent.getId() > 0){
+            return 1;
+        }
+        else{
+            return 0;
+        }
+    }
+
 }

@@ -10,7 +10,7 @@ spring:
       #设置数据库表的结构操作方式: create: 每次都会重新创建业务表; update: 只做更新表结构;
       ddl-auto: none
     # 显示执行 SQL 语句
-    show-sql: true
+    show-sql: false
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
       hibernate:
