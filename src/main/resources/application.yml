@@ -16,3 +16,8 @@ value:
   restOnTheJobStatus: 复工后:年假、节假日休假、病事假等正常请休假
   normalOnTheJobStatus: 复工后:今日正常上班
   startIndex: 6
+
+redis:
+  ip: 127.0.0.1
+  port: 6379
+  database: 0

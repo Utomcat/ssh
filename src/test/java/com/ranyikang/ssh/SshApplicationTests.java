@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.StringUtils;
+import redis.clients.jedis.Jedis;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -46,6 +47,23 @@ class SshApplicationTests {
      */
     @Value("${file.root.path2}")
     private String fileRootPath2;
+    /**
+     * redis ip 配置
+     */
+    @Value("${redis.ip}")
+    private String redisIP;
+    /**
+     * redis prot 配置
+     */
+    @Value("${redis.port}")
+    private Integer redisPort;
+    /**
+     * redis database 配置
+     */
+    @Value("${redis.database}")
+    private String redisDatabase;
+
+
     /**
      * 自定义姓名数组
      */
@@ -560,4 +578,18 @@ class SshApplicationTests {
         log.info("原数字值为: {} ,格式化后值为: {}", decimal3, number3);
     }
 
+
+    /**
+     * jedis 测试操作 redis
+     */
+    @Test
+    void test22(){
+        Jedis jedis = new Jedis(redisIP, redisPort);
+        long name = jedis.del("name");
+        log.info("删除 key = name 的值, 结果为: {}" , name);
+        String result = jedis.set("name", "张三");
+        String setexResult = jedis.setex("key", 60, "李四");
+        log.info("操作 redis 数据库的结果为: {} , {}", result, setexResult);
+        jedis.close();
+    }
 }
