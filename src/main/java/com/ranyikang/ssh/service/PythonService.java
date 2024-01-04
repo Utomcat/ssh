@@ -1,0 +1,26 @@
+package com.ranyikang.ssh.service;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+/**
+ * CLASS_NAME: PythonService.java <br/>
+ *
+ * @author ranyk           <br/>
+ * @version V1.0           <br/>
+ * @description: Python 接口业务类  <br/>
+ * @date: 2024-01-04 <br/>
+ */
+@Slf4j
+@Service
+public class PythonService {
+
+    /**
+     * 获取 json 数据
+     *
+     * @return 返回 json 数据字符串
+     */
+    public String getJson() {
+        return  "{\"active_mq_config\":{\"ipAddress\":\"192.168.10.3\",\"port\":61613,\"username\":\"admin\",\"passwd\":\"admin\",\"listenerName\":\"SampleListener\",\"destination\":\"/queue/\",\"subscribeId\":3,\"ack\":\"auto\",\"saveAccountDataQueueName\":\"agent_data\",\"saveSinaDataQueueName\":\"agent_sina\",\"saveLogQueueName\":\"agent_log\"},\"database_config\":{\"host\":\"localhost\",\"user\":\"user\",\"passwd\":\"123456\",\"port\":3307,\"db\":\"collect_ths_data\",\"charset\":\"utf8\"},\"login_config\":{\"loginCaptchaTextControlId\":3001,\"loginCaptchaTextStyle\":1342308365,\"loginCaptchaImgControlId\":1499,\"brokerageNameControlId\":2351,\"loginAccountControlId\":1001,\"loginPasswdControlId\":1012,\"loginCaptchaInputControlId\":1003,\"loginButtonControlId\":1006,\"addLoginButtonParentControlId\":59392,\"addLoginButtonControlId\":1691},\"logout_config\":{\"quitLoginProgramXCoordinate\":23,\"quitLoginProgramYCoordinate\":34},\"program_config\":{\"appPath\":\"C:/RLS/app/THS/xiadan.exe\",\"appName\":\"xiadan.exe\",\"title\":\"网上股票交易系统5.0\",\"dialogWinClassName\":\"#32770\",\"treeViewFirstParentClassName\":\"AfxMDIFrame140s\",\"treeViewSecondParentControlId\":59648,\"treeViewClassName\":\"SysTreeView32\",\"copyDataOfCaptchaWinControlId\":1365,\"copyDataOfCaptchaWinTexts\":\"提示\",\"copyDataOfCaptchaImgControlId\":2405,\"copyDataOfCaptchaInputControlId\":2404,\"confirmButtonTexts\":\"确认\",\"lastWeekButtonTexts\":\"近一周\",\"oneClickNewTexts\":\"一键打新\",\"oneClickNewControlId\":1365,\"collectionStartExecuteTime\":\" 08:58:00\",\"collectionEndExecuteTime\":\" 15:03:00\",\"maximumNumberOfCycles\":10},\"equity_config\":{\"accountEquityMenuPathDict\":{\"default\":\"|查询[F4]|资金股票\",\"银河证券-j南京南瑞路营业部\":\"|查询[F4]|资金股份\",\"银河证券-s成都科华北路营业部\":\"|查询[F4]|资金股份\"},\"positionValidValueSubscriptDict\":{\"default\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13],\"联储证券\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13],\"国金证券\":[0,1,2,3,4,5,6,7,8,9,10,11,12,null],\"宏信证券\":[0,1,2,3,4,5,6,7,8,9,10,11,12,null],\"川财证券\":[0,1,2,3,4,5,6,7,8,9,10,11,12,null],\"东海证券\":[0,1,2,3,4,5,6,7,8,9,10,11,12,null],\"开源证券\":[0,1,2,3,4,5,6,7,8,9,10,11,12,null],\"国泰君安-重庆中山三路证券营业部\":[0,1,2,3,4,5,6,7,8,9,10,11,12,null],\"申港证券\":[0,1,2,3,4,5,6,7,8,9,10,11,12,null],\"华鑫证券\":[0,1,2,3,4,5,6,7,8,9,10,11,12,null],\"天风证券\":[0,1,2,3,4,5,6,7,8,9,10,11,12,null],\"万和证券\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13],\"银河证券-j南京南瑞路营业部\":[0,1,2,4,5,6,7,8,9,10,11,12,13,null],\"银河证券-s成都科华北路营业部\":[0,1,2,4,5,6,7,8,9,10,11,12,13,null],\"长城证券\":[0,1,null,3,4,5,6,7,8,9,10,11,12,null],\"长江证券\":[0,1,2,3,4,5,6,7,8,9,10,11,12,null],\"财达证券\":[0,1,2,3,4,5,6,7,8,9,10,11,12,null]}},\"day_deal_config\":{\"sameDayDealMenuPathDict\":{\"default\":\"|查询[F4]|当日成交\"},\"sameDayDealValidValueSubscriptDict\":{\"default\":[0,1,2,3,4,5,6]}},\"transfer_flow_config\":{\"bankSecuritiesTransferFlowMenuPathDict\":{\"联储证券\":\"|资金管理|银证转账流水\",\"天风证券\":\"|银证转账|转账流水\",\"万和证券\":\"|三方存管|当日转账流水\",\"长城证券\":\"|银证转账|转账流水\",\"国金证券\":\"|银证转账|转账流水\",\"安信证券\":\"|银证转账|转账流水\",\"长江证券\":\"|多银行存管|银证转账流水\",\"宏信证券\":\"|银证业务|转账流水\",\"华鑫证券\":\"|银证转账|转账流水\",\"开源证券\":\"|银证转账|转账流水\",\"川财证券\":\"|银证转账|当日转账流水\",\"国泰君安-重庆中山三路证券营业部\":\"|银证转账|转账流水\",\"东海证券\":\"|银证业务|转账流水\",\"申港证券\":\"|转账|转账流水\",\"财达证券\":\"|银证转账|转账流水\",\"模拟炒股\":\"\",\"default\":\"|资金管理|银证转账流水\",\"银河证券-j南京南瑞路营业部\":\"|银证转账|流  水  账\",\"银河证券-s成都科华北路营业部\":\"|银证转账|流  水  账\"},\"bankSecuritiesTransferFlowValidValueSubscriptDict\":{\"联储证券\":[0,1,2,3,4,5,6,7],\"天风证券\":[0,1,2,5,6,7,8,9],\"万和证券\":[0,null,5,3,4,1,6,8],\"长城证券\":[1,null,2,4,5,11,3,9],\"国金证券\":[0,7,1,4,5,6,8,null],\"安信证券\":[0,1,3,6,2,5,4,7],\"长江证券\":[0,1,2,3,4,5,6,7],\"华鑫证券\":[1,2,3,6,8,11,10,9],\"开源证券\":[0,1,2,5,6,7,8,9],\"川财证券\":[0,4,5,2,3,1,6,7],\"宏信证券\":[0,1,2,5,6,7,8,10],\"国泰君安-重庆中山三路证券营业部\":[4,null,1,3,null,5,2,7],\"东海证券\":[7,9,4,null,null,8,6,3],\"申港证券\":[0,3,4,1,2,11,6,9],\"财达证券\":[0,1,2,5,6,7,8,10],\"银河证券-j南京南瑞路营业部\":[8,1,3,6,7,9,5,12],\"银河证券-s成都科华北路营业部\":[8,1,3,6,7,9,5,12],\"default\":[0,1,2,3,4,5,6,7]}}}";
+    }
+}
