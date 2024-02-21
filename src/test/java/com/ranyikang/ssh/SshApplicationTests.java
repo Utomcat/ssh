@@ -1,6 +1,10 @@
 package com.ranyikang.ssh;
 
+import cn.hutool.http.HttpUtil;
+import cn.hutool.http.Method;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import com.ranyikang.ssh.entity.Atest;
 import com.ranyikang.ssh.service.EchartsServiceImpl;
 import com.ranyikang.ssh.util.ArrayUtils;
@@ -26,10 +30,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -558,14 +559,13 @@ class SshApplicationTests {
     }
 
     /**
-     * DecimalFormat 格式化数字,并将其转换为字符串方法测试,测试结果:
-     * - 2023-03-01 测试结果:
-     *      格式字符串中小数点后有多少个0 则表示需要保留几位小数,多余位数四舍五入,不够位数用0 补位
-     *      格式字符串中小数点前的内容表示 按某种格式用指定的记号分割,如 #,###.00 代表小数点前没三位用 , 分割一下,记号前不用和分割位数一样,用一个也可
-     *
+     * DecimalFormat 格式化数字,并将其转换为字符串方法测试,测试结果:<br/>
+     * - 2023-03-01 测试结果:<br/>
+     * 格式字符串中小数点后有多少个0 则表示需要保留几位小数,多余位数四舍五入,不够位数用0 补位<br/>
+     * 格式字符串中小数点前的内容表示 按某种格式用指定的记号分割,如 #,###.00 代表小数点前没三位用 , 分割一下,记号前不用和分割位数一样,用一个也可<br/>
      */
     @Test
-    void test21(){
+    void test21() {
         BigDecimal decimal0 = new BigDecimal(1000000000000000000L);
         BigDecimal decimal1 = BigDecimal.valueOf(12.0457);
         BigDecimal decimal2 = BigDecimal.valueOf(12.0457899098);
@@ -589,10 +589,10 @@ class SshApplicationTests {
      * jedis 测试操作 redis
      */
     @Test
-    void test22(){
+    void test22() {
         Jedis jedis = new Jedis(redisIP, redisPort);
         long name = jedis.del("name");
-        log.info("删除 key = name 的值, 结果为: {}" , name);
+        log.info("删除 key = name 的值, 结果为: {}", name);
         String result = jedis.set("name", "张三");
         String setexResult = jedis.setex("key", 60, "李四");
         log.info("操作 redis 数据库的结果为: {} , {}", result, setexResult);
@@ -600,10 +600,77 @@ class SshApplicationTests {
     }
 
     @Test
-    void test23(){
-        stringRedisTemplate.opsForValue().set("name","李四");
+    void test23() {
+        stringRedisTemplate.opsForValue().set("name", "李四");
         String s = stringRedisTemplate.opsForValue().get("name");
         log.info("redis 存放的 key 为 name 的值为 {} ", s);
+
+    }
+
+    @Test
+    void test24() {
+        try {
+            String url = "http://182.140.146.105:8082/uapws/rest/unifiedPaymentSettlement/paymentCompleted";
+
+            JSONArray jsonarray = new JSONArray();
+            JSONObject test1 = new JSONObject();
+            test1.put("paystatus", "0");
+            test1.put("vdef48", "9999");
+            test1.put("paydate", "2024-01-18 11:30:40");
+            test1.put("vdef50", "");
+            test1.put("pkPaysettledetail", "10011T100000001QE3UO");
+            jsonarray.add(test1);
+
+            //加密
+            // String request = CDHttpClientUtil.getEncryptionTest(jsonarray.toJSONString());
+            JSONObject requestjson = new JSONObject();
+            requestjson.put("data", jsonarray.toJSONString());
+            log.info("请求参数  ==> {}", requestjson.toJSONString());
+            //请求接口
+            Map<String, String> headers = new HashMap<String, String>();
+            headers.put("Content-Type", "application/json");
+            String resultStr = HttpUtil.createRequest(Method.POST, url).addHeaders(headers).body(requestjson.toString()).execute().body();
+
+            //解密
+            // String checkSignAndDecrypt = CDHttpClientUtil.getDecodeTest(resultStr);
+            log.info(resultStr);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 字符串字符集判断
+     *
+     * @throws UnsupportedEncodingException 不支持的字符集编码异常
+     */
+    @Test
+    void test25() throws UnsupportedEncodingException {
+        String a = "这就是";
+        if (a.equals(new String(a.getBytes(), "GBK"))) {
+            log.info("字符集是 {}", "GBK");
+        } else if (a.equals(new String(a.getBytes(), "UTF8"))) {
+            log.info("字符集是 {}", "UTF8");
+        } else if (a.equals(new String(a.getBytes(), "GB2312"))) {
+            log.info("字符集是 {}", "GB2312");
+        } else if (a.equals(new String(a.getBytes(), "ISO-8859-1"))) {
+            log.info("字符集是 {}", "ISO-8859-1");
+        } else {
+            log.info("未知字符集");
+        }
+    }
+
+
+    @Test
+    void test26(){
+        try {
+            String a = "这就是";
+            String b = new String(a.getBytes("GBK"), "GBK");
+            log.info("字符集转化完成,其结果为 {} ==> {}", a, b);
+        }catch (Exception e){
+            log.error("不支持的字符集编码!");
+        }
 
     }
 
