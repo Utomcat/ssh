@@ -25,7 +25,7 @@ import java.util.Optional;
  */
 @Slf4j
 @Service("userServiceImpl")
-public class UserServiceImpl {
+public class UserServiceImpl{
 
     @Resource
     private UserDao userDao;

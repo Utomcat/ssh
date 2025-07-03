@@ -3,10 +3,14 @@ package com.ranyikang.ssh;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.http.Method;
 import com.alibaba.fastjson.JSON;
+import com.ranyikang.ssh.common.constant.PayTypeEnum;
+import com.ranyikang.ssh.design.patterns.strategy.PayStrategyFactory;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.ranyikang.ssh.entity.Atest;
+import com.ranyikang.ssh.entity.User;
 import com.ranyikang.ssh.service.EchartsServiceImpl;
+import com.ranyikang.ssh.service.UserServiceImpl;
 import com.ranyikang.ssh.util.ArrayUtils;
 import com.ranyikang.ssh.util.DataBaseUtils;
 import com.ranyikang.ssh.util.EasyExcelUtils;
@@ -69,6 +73,16 @@ class SshApplicationTests {
      */
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+    /**
+     * 表 sys_user 业务操作接口实现类
+     */
+    @Autowired
+    private UserServiceImpl userService;
+    /**
+     * 支付策略工厂对象
+     */
+    @Autowired
+    private PayStrategyFactory payStrategyFactory;
 
 
     /**
@@ -177,25 +191,25 @@ class SshApplicationTests {
         String str3 = "      ";
         String str4 = "a %";
         // false
-        log.error("str0 使用 StringUtils.hasText() 方法结果为   {}", StringUtils.hasText(str0));
+        log.error("str0 使用 StringUtils.hasText() 方法结果为   {}", Optional.of(StringUtils.hasText(str0)));
         // false
-        log.error("str0 使用 StringUtils.hasLength() 方法结果为   {}", StringUtils.hasLength(str0));
+        log.error("str0 使用 StringUtils.hasLength() 方法结果为   {}", Optional.of(StringUtils.hasLength(str0)));
         // false
-        log.error("str1 使用 StringUtils.hasText() 方法结果为   {}", StringUtils.hasText(str1));
+        log.error("str1 使用 StringUtils.hasText() 方法结果为   {}", Optional.of(StringUtils.hasText(str1)));
         // false
-        log.error("str1 使用 StringUtils.hasLength() 方法结果为   {}", StringUtils.hasLength(str1));
+        log.error("str1 使用 StringUtils.hasLength() 方法结果为   {}", Optional.of(StringUtils.hasLength(str1)));
         // false
-        log.error("str2 使用 StringUtils.hasText() 方法结果为   {}", StringUtils.hasText(str2));
+        log.error("str2 使用 StringUtils.hasText() 方法结果为   {}", Optional.of(StringUtils.hasText(str2)));
         // true
-        log.error("str2 使用 StringUtils.hasLength() 方法结果为   {}", StringUtils.hasLength(str2));
+        log.error("str2 使用 StringUtils.hasLength() 方法结果为   {}", Optional.of(StringUtils.hasLength(str2)));
         // false
-        log.error("str3 使用 StringUtils.hasText() 方法结果为   {}", StringUtils.hasText(str3));
+        log.error("str3 使用 StringUtils.hasText() 方法结果为   {}", Optional.of(StringUtils.hasText(str3)));
         // true
-        log.error("str3 使用 StringUtils.hasLength() 方法结果为   {}", StringUtils.hasLength(str3));
+        log.error("str3 使用 StringUtils.hasLength() 方法结果为   {}", Optional.of(StringUtils.hasLength(str3)));
         // true
-        log.error("str4 使用 StringUtils.hasText() 方法结果为   {}", StringUtils.hasText(str4));
+        log.error("str4 使用 StringUtils.hasText() 方法结果为   {}", Optional.of(StringUtils.hasText(str4)));
         // true
-        log.error("str4 使用 StringUtils.hasLength() 方法结果为   {}", StringUtils.hasLength(str4));
+        log.error("str4 使用 StringUtils.hasLength() 方法结果为   {}", Optional.of(StringUtils.hasLength(str4)));
     }
 
     @Test
@@ -236,11 +250,11 @@ class SshApplicationTests {
         //log.info("结果值 ==> {}",longestPalindrome("bbbbb"));
         int a = 10;
         int b = 5;
-        log.info("当前 a 的值为 {}, 当前 b 的值为 {}", a, b);
+        log.info("当前 a 的值为 {}, 当前 b 的值为 {}", Optional.of(a), Optional.of(b));
         a ^= b;
         b ^= a;
         a ^= b;
-        log.info("当前 a 的值为 {}, 当前 b 的值为 {}", a, b);
+        log.info("当前 a 的值为 {}, 当前 b 的值为 {}", Optional.of(a), Optional.of(b));
 
     }
 
@@ -280,10 +294,10 @@ class SshApplicationTests {
     double findMedianSortedArrays(int[] nums1, int[] nums2) {
         List<Integer> list = new ArrayList<>(nums1.length + nums2.length);
         for (int num : nums1) {
-            list.add(num);
+            list.add(Integer.valueOf(num));
         }
         for (int num : nums2) {
-            list.add(num);
+            list.add(Integer.valueOf(num));
         }
         if (list.size() > 0) {
             list = list.stream().sorted().collect(Collectors.toList());
@@ -314,10 +328,10 @@ class SshApplicationTests {
     void test10() {
         int a = 1;
         int b = 2;
-        log.error("a: {}, b: {}", a, b);
+        log.error("a: {}, b: {}", Optional.of(a), Optional.of(b));
         a += 1;
         b = +1;
-        log.error("a: {}, b: {}", a, b);
+        log.error("a: {}, b: {}", Optional.of(a), Optional.of(b));
 
     }
 
@@ -366,7 +380,7 @@ class SshApplicationTests {
         // 读取指定路径中的 Excel 数据
         List<FillInfoVo> dataList = EasyExcelUtils.complexRead(path, "填报信息2022-07-05-外包.xlsx", 7, new FillInfoVo());
         // 打印获取的数据量
-        log.info("本次读取的数据长度为: {}", dataList.size());
+        log.info("本次读取的数据长度为: {}", Optional.of(dataList.size()));
         // 遍历查询结果, 判断指定人员的填报内容中是否有误
         dataList.forEach(data -> {
             // 当当前遍历数据在指定的数组中,进行填报信息判断
@@ -434,7 +448,7 @@ class SshApplicationTests {
             path = fileRootPath2;
         }
         List<FcInterDtlVo> dataList = EasyExcelUtils.complexRead(path, "查看数据.xlsx", 2, 93, new FcInterDtlVo());
-        log.info("查询的数据总量为: {}", dataList.size());
+        log.info("查询的数据总量为: {}", Optional.of(dataList.size()));
         dataList.forEach(data -> {
             // 当前数据: ==> {"accName":"成都锦江绿道建设投资集团有限公司（二级本部）","account":"1000012120000004","curName":"人民币","interest":"118,416.67","interestRatePercent":"2.10%","interestTime":"2022-04-17","sigma":"2,030,000,000.00"}
             // log.info("当前数据: ==> {}", JSON.toJSONString(data));
@@ -559,6 +573,10 @@ class SshApplicationTests {
     }
 
     /**
+     * DecimalFormat 格式化数字,并将其转换为字符串方法测试,测试结果:
+     * - 2023-03-01 测试结果:
+     * 格式字符串中小数点后有多少个0 则表示需要保留几位小数,多余位数四舍五入,不够位数用0 补位
+     * 格式字符串中小数点前的内容表示 按某种格式用指定的记号分割,如 #,###.00 代表小数点前没三位用 , 分割一下,记号前不用和分割位数一样,用一个也可
      * DecimalFormat 格式化数字,并将其转换为字符串方法测试,测试结果:<br/>
      * - 2023-03-01 测试结果:<br/>
      * 格式字符串中小数点后有多少个0 则表示需要保留几位小数,多余位数四舍五入,不够位数用0 补位<br/>
@@ -592,6 +610,7 @@ class SshApplicationTests {
     void test22() {
         Jedis jedis = new Jedis(redisIP, redisPort);
         long name = jedis.del("name");
+        log.info("删除 key = name 的值, 结果为: {}", Optional.of(name));
         log.info("删除 key = name 的值, 结果为: {}", name);
         String result = jedis.set("name", "张三");
         String setexResult = jedis.setex("key", 60, "李四");
@@ -609,6 +628,39 @@ class SshApplicationTests {
 
     @Test
     void test24() {
+        User user = userService.queryUserById(Integer.valueOf(4));
+        Boolean deleted = Boolean.FALSE;
+        for (int i = 0; i < 5; i++) {
+            user.setDeleted(deleted);
+
+        }
+    }
+
+    /**
+     * Optional 类 ofNullable orElse 方法测试, 当判定值为空时取默认值
+     */
+    @Test
+    void test25() {
+        String a = null;
+        switch (Optional.ofNullable(a).orElse("default")) {
+            case "a":
+                log.info("a");
+                break;
+            default:
+                log.info("异常值");
+        }
+    }
+
+    /**
+     * 策略模式 + 自动注入方式测试
+     */
+    @Test
+    void test26() {
+        Boolean result = payStrategyFactory.getPayStrategy(PayTypeEnum.UNKNOWN).pay(Double.valueOf(100D));
+        log.info("支付结果为: {}", result);
+    }
+    @Test
+    void test27() {
         try {
             String url = "http://182.140.146.105:8082/uapws/rest/unifiedPaymentSettlement/paymentCompleted";
 
@@ -646,7 +698,7 @@ class SshApplicationTests {
      * @throws UnsupportedEncodingException 不支持的字符集编码异常
      */
     @Test
-    void test25() throws UnsupportedEncodingException {
+    void test28() throws UnsupportedEncodingException {
         String a = "这就是";
         if (a.equals(new String(a.getBytes(), "GBK"))) {
             log.info("字符集是 {}", "GBK");
@@ -663,7 +715,7 @@ class SshApplicationTests {
 
 
     @Test
-    void test26(){
+    void test29(){
         try {
             String a = "这就是";
             String b = new String(a.getBytes("GBK"), "GBK");

@@ -175,7 +175,7 @@ public class CompanyService {
                     temp.put(data.getName(), "接种情况填报有异常");
                 }
                 checkOnTheJobStatus(temp, specialTreatment, value, data);
-                if (temp.size() > 0) {
+                if (!temp.isEmpty()) {
                     result.add(temp);
                 }
                 addressMap.put(data.getName(), data.getAddress());
