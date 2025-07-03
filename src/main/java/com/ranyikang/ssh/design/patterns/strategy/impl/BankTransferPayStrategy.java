@@ -1,20 +1,21 @@
-package com.ranyikang.ssh.design.patterns.strategy;
+package com.ranyikang.ssh.design.patterns.strategy.impl;
 
 import com.ranyikang.ssh.common.constant.PayTypeEnum;
+import com.ranyikang.ssh.design.patterns.strategy.api.PayStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
- * CLASS_NAME: WechatPayStrategy.java
+ * CLASS_NAME: BankTransferPayStrategy.java
  *
  * @author ranyk
  * @version V1.0
- * @description: 微信支付策略实现
+ * @description: 银行转账方式策略实现
  * @date: 2025-05-24
  */
 @Slf4j
 @Service
-public class WechatPayStrategy implements PayStrategy {
+public class BankTransferPayStrategy implements PayStrategy {
     /**
      * 获取支付方式类型
      *
@@ -22,7 +23,7 @@ public class WechatPayStrategy implements PayStrategy {
      */
     @Override
     public PayTypeEnum getPayType() {
-        return PayTypeEnum.WECHAT_PAY;
+        return PayTypeEnum.BANK_TRANSFER;
     }
 
     /**
@@ -33,7 +34,7 @@ public class WechatPayStrategy implements PayStrategy {
      */
     @Override
     public Boolean pay(Double amount) {
-        log.info("微信支付成功, 支付金额: {} 元", amount);
+        log.info("银行转账支付成功, 支付金额: {} 元", amount);
         return Boolean.TRUE;
     }
 }

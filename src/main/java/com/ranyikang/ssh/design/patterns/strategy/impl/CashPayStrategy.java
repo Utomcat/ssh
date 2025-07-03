@@ -1,22 +1,21 @@
-package com.ranyikang.ssh.design.patterns.strategy;
+package com.ranyikang.ssh.design.patterns.strategy.impl;
 
 import com.ranyikang.ssh.common.constant.PayTypeEnum;
+import com.ranyikang.ssh.design.patterns.strategy.api.PayStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
- * CLASS_NAME: AliPayStrategy.java
+ * CLASS_NAME: CashPayStrategy.java
  *
  * @author ranyk
  * @version V1.0
- * @description: 支付宝支付策略实现
+ * @description: 现金方式支付策略实现
  * @date: 2025-05-24
  */
 @Slf4j
 @Service
-public class AliPayStrategy implements PayStrategy{
-
-
+public class CashPayStrategy implements PayStrategy {
     /**
      * 获取支付方式类型
      *
@@ -24,7 +23,7 @@ public class AliPayStrategy implements PayStrategy{
      */
     @Override
     public PayTypeEnum getPayType() {
-        return PayTypeEnum.ALI_PAY;
+        return PayTypeEnum.CASH;
     }
 
     /**
@@ -35,7 +34,7 @@ public class AliPayStrategy implements PayStrategy{
      */
     @Override
     public Boolean pay(Double amount) {
-        log.info("支付宝支付成功, 支付金额: {} 元", amount);
+        log.info("现金支付成功, 支付金额: {} 元", amount);
         return Boolean.TRUE;
     }
 }

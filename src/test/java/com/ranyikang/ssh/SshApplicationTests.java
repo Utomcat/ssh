@@ -3,10 +3,12 @@ package com.ranyikang.ssh;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.http.Method;
 import com.alibaba.fastjson.JSON;
-import com.ranyikang.ssh.common.constant.PayTypeEnum;
-import com.ranyikang.ssh.design.patterns.strategy.PayStrategyFactory;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.ranyikang.ssh.common.constant.PayTypeEnum;
+import com.ranyikang.ssh.design.patterns.adapter.impl.ClassAdapter;
+import com.ranyikang.ssh.design.patterns.adapter.impl.ObjectAdapter;
+import com.ranyikang.ssh.design.patterns.strategy.factory.PayStrategyFactory;
 import com.ranyikang.ssh.entity.Atest;
 import com.ranyikang.ssh.entity.User;
 import com.ranyikang.ssh.service.EchartsServiceImpl;
@@ -83,6 +85,11 @@ class SshApplicationTests {
      */
     @Autowired
     private PayStrategyFactory payStrategyFactory;
+    /**
+     * 对象适配器对象
+     */
+    @Autowired
+    ObjectAdapter objectAdapter;
 
 
     /**
@@ -659,6 +666,7 @@ class SshApplicationTests {
         Boolean result = payStrategyFactory.getPayStrategy(PayTypeEnum.UNKNOWN).pay(Double.valueOf(100D));
         log.info("支付结果为: {}", result);
     }
+
     @Test
     void test27() {
         try {
@@ -726,4 +734,22 @@ class SshApplicationTests {
 
     }
 
+    /**
+     * 类适配器方式测试
+     */
+    @Test
+    void test30(){
+        ClassAdapter adapter = new ClassAdapter();
+        adapter.method1();
+        adapter.method2();
+    }
+
+    /**
+     * 对象适配器模式测试
+     */
+    @Test
+    void test31(){
+        objectAdapter.method1();
+        objectAdapter.method2();
+    }
 }

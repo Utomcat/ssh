@@ -3,7 +3,7 @@
  *
  * @author ranyk
  * @version V1.0
- * @description: 策略模式
+ * @description: 策略模式包
  * @date: 2025-05-24
  */
 package com.ranyikang.ssh.design.patterns.strategy;

@@ -1,20 +1,21 @@
-package com.ranyikang.ssh.design.patterns.strategy;
+package com.ranyikang.ssh.design.patterns.strategy.impl;
 
 import com.ranyikang.ssh.common.constant.PayTypeEnum;
+import com.ranyikang.ssh.design.patterns.strategy.api.PayStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
- * CLASS_NAME: OtherPayStrategy.java
+ * CLASS_NAME: UnknownPayStrategy.java
  *
  * @author ranyk
  * @version V1.0
- * @description: 其他支付方式策略实现
+ * @description: 未知支付方式策略实现
  * @date: 2025-05-24
  */
 @Slf4j
 @Service
-public class OtherPayStrategy implements PayStrategy{
+public class UnknownPayStrategy implements PayStrategy {
     /**
      * 获取支付方式类型
      *
@@ -22,7 +23,7 @@ public class OtherPayStrategy implements PayStrategy{
      */
     @Override
     public PayTypeEnum getPayType() {
-        return PayTypeEnum.OTHER;
+        return PayTypeEnum.UNKNOWN;
     }
 
     /**
@@ -33,7 +34,7 @@ public class OtherPayStrategy implements PayStrategy{
      */
     @Override
     public Boolean pay(Double amount) {
-        log.info("其他支付方式支付成功, 支付金额: {} 元", amount);
-        return Boolean.TRUE;
+        log.info("未知支付方式支付失败, 支付金额: {} 元", amount);
+        return Boolean.FALSE;
     }
 }

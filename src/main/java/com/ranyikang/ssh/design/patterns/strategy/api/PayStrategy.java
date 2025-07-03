@@ -1,4 +1,4 @@
-package com.ranyikang.ssh.design.patterns.strategy;
+package com.ranyikang.ssh.design.patterns.strategy.api;
 
 import com.ranyikang.ssh.common.constant.PayTypeEnum;
 

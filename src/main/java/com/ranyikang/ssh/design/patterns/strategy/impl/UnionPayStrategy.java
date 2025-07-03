@@ -1,20 +1,21 @@
-package com.ranyikang.ssh.design.patterns.strategy;
+package com.ranyikang.ssh.design.patterns.strategy.impl;
 
 import com.ranyikang.ssh.common.constant.PayTypeEnum;
+import com.ranyikang.ssh.design.patterns.strategy.api.PayStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
- * CLASS_NAME: CashPayStrategy.java
+ * CLASS_NAME: UnionPayStrategy.java
  *
  * @author ranyk
  * @version V1.0
- * @description: 现金方式支付策略实现
+ * @description: 银联支付方式策略实现
  * @date: 2025-05-24
  */
 @Slf4j
 @Service
-public class CashPayStrategy implements PayStrategy{
+public class UnionPayStrategy implements PayStrategy {
     /**
      * 获取支付方式类型
      *
@@ -22,7 +23,7 @@ public class CashPayStrategy implements PayStrategy{
      */
     @Override
     public PayTypeEnum getPayType() {
-        return PayTypeEnum.CASH;
+        return PayTypeEnum.UNION_PAY;
     }
 
     /**
@@ -33,7 +34,7 @@ public class CashPayStrategy implements PayStrategy{
      */
     @Override
     public Boolean pay(Double amount) {
-        log.info("现金支付成功, 支付金额: {} 元", amount);
+        log.info("银联支付成功, 支付金额: {} 元", amount);
         return Boolean.TRUE;
     }
 }
