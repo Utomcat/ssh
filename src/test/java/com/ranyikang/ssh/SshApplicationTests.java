@@ -6,9 +6,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.ranyikang.ssh.common.constant.PayTypeEnum;
-import com.ranyikang.ssh.design.patterns.adapter.impl.ClassAdapter;
-import com.ranyikang.ssh.design.patterns.adapter.impl.ObjectAdapter;
-import com.ranyikang.ssh.design.patterns.strategy.factory.PayStrategyFactory;
+import com.ranyikang.ssh.design.patterns.create.singleton.lazy.SingletonLazyModeEnum;
+import com.ranyikang.ssh.design.patterns.structure.adapter.impl.ClassAdapter;
+import com.ranyikang.ssh.design.patterns.structure.adapter.impl.ObjectAdapter;
+import com.ranyikang.ssh.design.patterns.actions.strategy.factory.PayStrategyFactory;
 import com.ranyikang.ssh.entity.Atest;
 import com.ranyikang.ssh.entity.User;
 import com.ranyikang.ssh.service.EchartsServiceImpl;
@@ -751,5 +752,16 @@ class SshApplicationTests {
     void test31(){
         objectAdapter.method1();
         objectAdapter.method2();
+    }
+
+    /**
+     * 设计模式 - 单例模式 - 懒汉模式 - 单例对象使用
+     */
+    @Test
+    void test32(){
+        SingletonLazyModeEnum singletonLazyModeEnum = SingletonLazyModeEnum.INSTANCE;
+        singletonLazyModeEnum.getInfo();
+        SingletonLazyModeEnum singletonLazyModeEnum1 = SingletonLazyModeEnum.INSTANCE;
+        singletonLazyModeEnum1.getInfo();
     }
 }
