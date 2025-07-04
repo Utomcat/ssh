@@ -1,9 +1,9 @@
 /**
- * CLASS_NAME: package-info.java
+ * CLASS_NAME: package-info.java <br/>
  *
- * @author ranyk
- * @version V1.0
- * @description: 策略模式包
- * @date: 2025-05-24
+ * author ranyk <br/>
+ * version V1.0 <br/>
+ * description: 行为模式 - 策略模式包 <br/>
+ * date: 2025-05-24 <br/>
  */
 package com.ranyikang.ssh.design.patterns.strategy;
